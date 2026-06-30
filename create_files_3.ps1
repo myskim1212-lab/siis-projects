@@ -1,0 +1,121 @@
+$utf8NoBom = New-Object System.Text.UTF8Encoding($False)
+$base = "D:\wso2\WSO2-Integration-Studio-8.5.0-win32-x86_64\workspace\SIISDbConnectorTest"
+$res = "$base\src\test\resources"
+
+# FILE 12: TC015.json - multi-table 2 tables
+$content = @'
+{
+    "operations": {
+        "delete_tb_user_v2_m1": null,
+        "delete_tb_user_v2_m2": null,
+        "insert_tb_user_v2_m1": {
+            "data": [
+                {"USER_ID":"ID_1","USER_NAME":"Multi1_1","USER_NICK":"MN1","USER_CODE":"MC1","USER_DESC":"Multi table 1 record 1","USER_AGE":20,"USER_COUNT":1000,"USER_BIGINT":922337203685477580,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzE=","META_JSON":"{\"k\":1}","TAGS":"t1","USER_XML":"<u><id>1</id></u>","OPTIONAL_COL":"TC015"},
+                {"USER_ID":"ID_2","USER_NAME":"Multi1_2","USER_NICK":"MN2","USER_CODE":"MC2","USER_DESC":"Multi table 1 record 2","USER_AGE":21,"USER_COUNT":1001,"USER_BIGINT":922337203685477581,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"N","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzI=","META_JSON":"{\"k\":2}","TAGS":"t2","USER_XML":"<u><id>2</id></u>","OPTIONAL_COL":"TC015"},
+                {"USER_ID":"ID_3","USER_NAME":"Multi1_3","USER_NICK":"MN3","USER_CODE":"MC3","USER_DESC":"Multi table 1 record 3","USER_AGE":22,"USER_COUNT":1002,"USER_BIGINT":922337203685477582,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzM=","META_JSON":"{\"k\":3}","TAGS":"t3","USER_XML":"<u><id>3</id></u>","OPTIONAL_COL":"TC015"}
+            ]
+        },
+        "insert_tb_user_v2_m2": {
+            "data": [
+                {"USER_ID":"ID_1","USER_NAME":"Multi2_1","USER_NICK":"MN1","USER_CODE":"MC1","USER_DESC":"Multi table 2 record 1","USER_AGE":20,"USER_COUNT":1000,"USER_BIGINT":922337203685477580,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzE=","META_JSON":"{\"k\":1}","TAGS":"t1","USER_XML":"<u><id>1</id></u>","OPTIONAL_COL":"TC015"},
+                {"USER_ID":"ID_2","USER_NAME":"Multi2_2","USER_NICK":"MN2","USER_CODE":"MC2","USER_DESC":"Multi table 2 record 2","USER_AGE":21,"USER_COUNT":1001,"USER_BIGINT":922337203685477581,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"N","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzI=","META_JSON":"{\"k\":2}","TAGS":"t2","USER_XML":"<u><id>2</id></u>","OPTIONAL_COL":"TC015"},
+                {"USER_ID":"ID_3","USER_NAME":"Multi2_3","USER_NICK":"MN3","USER_CODE":"MC3","USER_DESC":"Multi table 2 record 3","USER_AGE":22,"USER_COUNT":1002,"USER_BIGINT":922337203685477582,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzM=","META_JSON":"{\"k\":3}","TAGS":"t3","USER_XML":"<u><id>3</id></u>","OPTIONAL_COL":"TC015"}
+            ]
+        }
+    }
+}
+'@
+[System.IO.File]::WriteAllText("$res\TC015.json", $content, $utf8NoBom)
+Write-Host "FILE 12: TC015.json - OK"
+
+# FILE 13: TC016.json - multi-table 3 tables
+$content = @'
+{
+    "operations": {
+        "delete_tb_user_v2_m1": null,
+        "delete_tb_user_v2_m2": null,
+        "delete_tb_user_v2_m3": null,
+        "insert_tb_user_v2_m1": {
+            "data": [
+                {"USER_ID":"ID_1","USER_NAME":"Multi1_1","USER_NICK":"MN1","USER_CODE":"MC1","USER_DESC":"Multi 3-table record m1-1","USER_AGE":20,"USER_COUNT":1000,"USER_BIGINT":922337203685477580,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzE=","META_JSON":"{\"k\":1}","TAGS":"t1","USER_XML":"<u><id>1</id></u>","OPTIONAL_COL":"TC016"},
+                {"USER_ID":"ID_2","USER_NAME":"Multi1_2","USER_NICK":"MN2","USER_CODE":"MC2","USER_DESC":"Multi 3-table record m1-2","USER_AGE":21,"USER_COUNT":1001,"USER_BIGINT":922337203685477581,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"N","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzI=","META_JSON":"{\"k\":2}","TAGS":"t2","USER_XML":"<u><id>2</id></u>","OPTIONAL_COL":"TC016"},
+                {"USER_ID":"ID_3","USER_NAME":"Multi1_3","USER_NICK":"MN3","USER_CODE":"MC3","USER_DESC":"Multi 3-table record m1-3","USER_AGE":22,"USER_COUNT":1002,"USER_BIGINT":922337203685477582,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzM=","META_JSON":"{\"k\":3}","TAGS":"t3","USER_XML":"<u><id>3</id></u>","OPTIONAL_COL":"TC016"}
+            ]
+        },
+        "insert_tb_user_v2_m2": {
+            "data": [
+                {"USER_ID":"ID_1","USER_NAME":"Multi2_1","USER_NICK":"MN1","USER_CODE":"MC1","USER_DESC":"Multi 3-table record m2-1","USER_AGE":20,"USER_COUNT":1000,"USER_BIGINT":922337203685477580,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzE=","META_JSON":"{\"k\":1}","TAGS":"t1","USER_XML":"<u><id>1</id></u>","OPTIONAL_COL":"TC016"},
+                {"USER_ID":"ID_2","USER_NAME":"Multi2_2","USER_NICK":"MN2","USER_CODE":"MC2","USER_DESC":"Multi 3-table record m2-2","USER_AGE":21,"USER_COUNT":1001,"USER_BIGINT":922337203685477581,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"N","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzI=","META_JSON":"{\"k\":2}","TAGS":"t2","USER_XML":"<u><id>2</id></u>","OPTIONAL_COL":"TC016"},
+                {"USER_ID":"ID_3","USER_NAME":"Multi2_3","USER_NICK":"MN3","USER_CODE":"MC3","USER_DESC":"Multi 3-table record m2-3","USER_AGE":22,"USER_COUNT":1002,"USER_BIGINT":922337203685477582,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzM=","META_JSON":"{\"k\":3}","TAGS":"t3","USER_XML":"<u><id>3</id></u>","OPTIONAL_COL":"TC016"}
+            ]
+        },
+        "insert_tb_user_v2_m3": {
+            "data": [
+                {"USER_ID":"ID_1","USER_NAME":"Multi3_1","USER_NICK":"MN1","USER_CODE":"MC1","USER_DESC":"Multi 3-table record m3-1","USER_AGE":20,"USER_COUNT":1000,"USER_BIGINT":922337203685477580,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzE=","META_JSON":"{\"k\":1}","TAGS":"t1","USER_XML":"<u><id>1</id></u>","OPTIONAL_COL":"TC016"},
+                {"USER_ID":"ID_2","USER_NAME":"Multi3_2","USER_NICK":"MN2","USER_CODE":"MC2","USER_DESC":"Multi 3-table record m3-2","USER_AGE":21,"USER_COUNT":1001,"USER_BIGINT":922337203685477581,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"N","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzI=","META_JSON":"{\"k\":2}","TAGS":"t2","USER_XML":"<u><id>2</id></u>","OPTIONAL_COL":"TC016"},
+                {"USER_ID":"ID_3","USER_NAME":"Multi3_3","USER_NICK":"MN3","USER_CODE":"MC3","USER_DESC":"Multi 3-table record m3-3","USER_AGE":22,"USER_COUNT":1002,"USER_BIGINT":922337203685477582,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzM=","META_JSON":"{\"k\":3}","TAGS":"t3","USER_XML":"<u><id>3</id></u>","OPTIONAL_COL":"TC016"}
+            ]
+        }
+    }
+}
+'@
+[System.IO.File]::WriteAllText("$res\TC016.json", $content, $utf8NoBom)
+Write-Host "FILE 13: TC016.json - OK"
+
+# FILE 14: TC017.json - stop on error
+$content = @'
+{
+    "operations": {
+        "delete_tb_user_v2_m1": null,
+        "delete_tb_user_v2_m2": null,
+        "delete_tb_user_v2_m3": null,
+        "insert_tb_user_v2_m1": {
+            "data": [
+                {"USER_ID":"ID_1","USER_NAME":"Stop1_1","USER_NICK":"SN1","USER_CODE":"SC1","USER_DESC":"Stop on error test - m1 record 1","USER_AGE":20,"USER_COUNT":1000,"USER_BIGINT":922337203685477580,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzE=","META_JSON":"{\"k\":1}","TAGS":"stop","USER_XML":"<u><id>1</id></u>","OPTIONAL_COL":"TC017"},
+                {"USER_ID":"ID_2","USER_NAME":"Stop1_2","USER_NICK":"SN2","USER_CODE":"SC2","USER_DESC":"Stop on error test - m1 record 2","USER_AGE":21,"USER_COUNT":1001,"USER_BIGINT":922337203685477581,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"N","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzI=","META_JSON":"{\"k\":2}","TAGS":"stop","USER_XML":"<u><id>2</id></u>","OPTIONAL_COL":"TC017"},
+                {"USER_ID":"ID_3","USER_NAME":"Stop1_3","USER_NICK":"SN3","USER_CODE":"SC3","USER_DESC":"Stop on error test - m1 record 3","USER_AGE":22,"USER_COUNT":1002,"USER_BIGINT":922337203685477582,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzM=","META_JSON":"{\"k\":3}","TAGS":"stop","USER_XML":"<u><id>3</id></u>","OPTIONAL_COL":"TC017"}
+            ]
+        },
+        "insert_tb_user_v2_m2": {
+            "data": [
+                {
+                    "USER_ID": null,
+                    "USER_NAME": null,
+                    "USER_NICK": "NICK_1",
+                    "USER_CODE": "ERROR_CODE",
+                    "USER_DESC": "TC017 error record - should fail due to NOT NULL constraint",
+                    "USER_AGE": 20,
+                    "USER_COUNT": 1000,
+                    "USER_BIGINT": 922337203685477580,
+                    "USER_SCORE": 88.12,
+                    "USER_RATE": 0.123,
+                    "USER_RATIO": 1.23,
+                    "USER_WEIGHT": 75.43,
+                    "CREATED_DATE": "2026-01-01",
+                    "UPDATED_TS": "2026-01-01T00:00:00.000",
+                    "UPDATED_TZ": "2026-01-01T00:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-01-01T00:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "ZXJyb3I=",
+                    "META_JSON": "{\"error\":true}",
+                    "TAGS": "error",
+                    "USER_XML": "<u><error>true</error></u>",
+                    "OPTIONAL_COL": "TC017_ERROR"
+                }
+            ]
+        },
+        "insert_tb_user_v2_m3": {
+            "data": [
+                {"USER_ID":"ID_1","USER_NAME":"Stop3_1","USER_NICK":"SN1","USER_CODE":"SC1","USER_DESC":"Stop on error test - m3 record 1","USER_AGE":20,"USER_COUNT":1000,"USER_BIGINT":922337203685477580,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzE=","META_JSON":"{\"k\":1}","TAGS":"stop","USER_XML":"<u><id>1</id></u>","OPTIONAL_COL":"TC017"},
+                {"USER_ID":"ID_2","USER_NAME":"Stop3_2","USER_NICK":"SN2","USER_CODE":"SC2","USER_DESC":"Stop on error test - m3 record 2","USER_AGE":21,"USER_COUNT":1001,"USER_BIGINT":922337203685477581,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"N","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzI=","META_JSON":"{\"k\":2}","TAGS":"stop","USER_XML":"<u><id>2</id></u>","OPTIONAL_COL":"TC017"},
+                {"USER_ID":"ID_3","USER_NAME":"Stop3_3","USER_NICK":"SN3","USER_CODE":"SC3","USER_DESC":"Stop on error test - m3 record 3","USER_AGE":22,"USER_COUNT":1002,"USER_BIGINT":922337203685477582,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzM=","META_JSON":"{\"k\":3}","TAGS":"stop","USER_XML":"<u><id>3</id></u>","OPTIONAL_COL":"TC017"}
+            ]
+        }
+    }
+}
+'@
+[System.IO.File]::WriteAllText("$res\TC017.json", $content, $utf8NoBom)
+Write-Host "FILE 14: TC017.json - OK"
+
+Write-Host "--- Files 12-14 complete ---"
