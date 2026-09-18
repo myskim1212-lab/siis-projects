@@ -1,5 +1,7 @@
 package sec.siis.connection;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.naming.Context;
@@ -35,5 +37,14 @@ public class DataSourceManager {
                 throw new RuntimeException("JNDI lookup failed: " + name, e);
             }
         });
+    }
+
+    /**
+     * 지금까지 최소 한 번 이상 조회되어 캐시에 올라온 데이터소스 목록의 스냅샷.
+     * JVM 모니터링(커넥션 풀 상태 조회)에서 쓴다 — 한 번도 쓰인 적 없는 데이터소스는
+     * 애초에 풀이 초기화되지 않았을 수 있어 대상에서 자연히 제외된다.
+     */
+    public static Map<String, DataSource> snapshot() {
+        return new LinkedHashMap<>(cache);
     }
 }

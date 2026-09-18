@@ -1,5 +1,6 @@
 package sec.siis.jdbc.mediator;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -117,7 +118,10 @@ public class JdbcMediator extends AbstractMediator {
 	    
 	    // 5. 최종 응답 설정
 	    try {
-	        MiPayloadUtil.setJsonPayload(context, CommonJsonUtil.toJson(response), if_success);
+	        String recordCountHeaderValue = ApiResponseFactory.resolveRecordCountHeader(jcfg, jdbcExecResult);
+	        Map<String, String> responseHeaders =
+	                Collections.singletonMap(ApiResponseFactory.RECORD_COUNT_HEADER_NAME, recordCountHeaderValue);
+	        MiPayloadUtil.setJsonPayload(context, CommonJsonUtil.toJson(response), if_success, responseHeaders);
 	    } catch (Exception e) {
 	        log.error("Critical: Failed to set JSON payload", e);
 	        

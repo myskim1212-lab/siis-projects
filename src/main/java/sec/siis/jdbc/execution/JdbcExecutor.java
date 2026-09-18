@@ -851,10 +851,10 @@ public class JdbcExecutor {
 				return new OperationOutput(resultData.size(), 0, resultData);
 			case PROCEDURE:
 				if (rows == null || rows.isEmpty()) {
-					List<Map<String, Object>> procOut = strategy.executeProcedure(conn, txUnitId, eop, null);
+					List<Map<String, Object>> procOut = strategy.executeProcedure(conn, txUnitId, eop, null, jcfg.getBatch_size());
 					return new OperationOutput(DEFAULT_PROCEDURE_AFFECTED_ROWS, 0, procOut);
 				} else {
-					List<Map<String, Object>> procOut = strategy.executeProcedure(conn, txUnitId, eop, rows);
+					List<Map<String, Object>> procOut = strategy.executeProcedure(conn, txUnitId, eop, rows, jcfg.getBatch_size());
 					return new OperationOutput(rows.size(), 0, procOut);
 				}
 			default:

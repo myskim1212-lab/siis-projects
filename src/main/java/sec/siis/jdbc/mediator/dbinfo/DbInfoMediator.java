@@ -35,23 +35,34 @@ public class DbInfoMediator extends AbstractMediator {
             ObjectMapper mapper = ObjectMapperHolder.INSTANCE.mapper;
             JsonNode req = mapper.readTree(payload);
 
-            action   = getRequiredText(req, "action");
-            jndiName = getRequiredText(req, "jndi_name");
+            action = getRequiredText(req, "action");
 
             log.debug("[DbInfoMediator] Started Dbinfo Service");
-            
-            DataSource ds = DataSourceManager.get(jndiName);
+
             DbInfoExecutor executor = new DbInfoExecutor();
 
             switch (action.toUpperCase()) {
-                case "CONNECTION_TEST":
+                case "CONNECTION_TEST": {
+                    jndiName = getRequiredText(req, "jndi_name");
+                    DataSource ds = DataSourceManager.get(jndiName);
                     response = executor.testConnection(ds, jndiName);
                     break;
-                case "TABLE_LAYOUT":
+                }
+                case "CONNECTION_TEST_DIRECT": {
+                    String url      = getRequiredText(req, "url");
+                    String user     = getRequiredText(req, "user");
+                    String password = textOrNull(req, "password");
+                    response = executor.testConnectionDirect(url, user, password);
+                    break;
+                }
+                case "TABLE_LAYOUT": {
+                    jndiName = getRequiredText(req, "jndi_name");
+                    DataSource ds = DataSourceManager.get(jndiName);
                     String tableName  = getRequiredText(req, "table_name");
                     String schemaName = textOrNull(req, "schema_name");
                     response = executor.getTableLayout(ds, jndiName, schemaName, tableName);
                     break;
+                }
                 default:
                     throw new IllegalArgumentException("Unknown action: " + action);
             }

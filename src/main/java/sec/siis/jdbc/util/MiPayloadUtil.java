@@ -2,6 +2,7 @@ package sec.siis.jdbc.util;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseException;
@@ -12,12 +13,17 @@ public class MiPayloadUtil {
     private MiPayloadUtil() {}
 
     public static void setJsonPayload(MessageContext mc, String jsonString, boolean isSuccess) {
-        org.apache.axis2.context.MessageContext axis2MC = 
+        setJsonPayload(mc, jsonString, isSuccess, null);
+    }
+
+    public static void setJsonPayload(MessageContext mc, String jsonString, boolean isSuccess,
+            Map<String, String> extraResponseHeaders) {
+        org.apache.axis2.context.MessageContext axis2MC =
                 ((org.apache.synapse.core.axis2.Axis2MessageContext) mc).getAxis2MessageContext();
-        
+
         // 1. 기존 JSON 데이터 구조 엔진에서 삭제
         org.apache.synapse.commons.json.JsonUtil.removeJsonPayload(axis2MC);
-        
+
         // 2. SOAP Body 내부의 오염된 자식 노드들 강제 제거 (방법 2 적용)
         try {
             org.apache.axiom.om.OMElement body = axis2MC.getEnvelope().getBody();
@@ -35,10 +41,10 @@ public class MiPayloadUtil {
         try {
             byte[] bytes = jsonString.getBytes(java.nio.charset.StandardCharsets.UTF_8);
             java.io.InputStream is = new java.io.ByteArrayInputStream(bytes);
-            
+
             // 새로운 페이로드 설정 (기존 데이터가 비워졌으므로 안전하게 성공함)
             org.apache.synapse.commons.json.JsonUtil.getNewJsonPayload(axis2MC, is, true, true);
-            
+
             axis2MC.setProperty("messageType", "application/json");
             axis2MC.setProperty("ContentType", "application/json");
             if(isSuccess) {
@@ -46,10 +52,28 @@ public class MiPayloadUtil {
             }else {
             	axis2MC.setProperty("HTTP_SC", "500");
             }
-            
+
+            if (extraResponseHeaders != null && !extraResponseHeaders.isEmpty()) {
+                setTransportHeaders(axis2MC, extraResponseHeaders);
+            }
+
         } catch (Exception e) {
             throw new SynapseException("JSON Payload setting failed", e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void setTransportHeaders(org.apache.axis2.context.MessageContext axis2MC,
+            Map<String, String> headers) {
+        Object existing = axis2MC.getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
+        Map<String, Object> transportHeaders;
+        if (existing instanceof Map) {
+            transportHeaders = (Map<String, Object>) existing;
+        } else {
+            transportHeaders = new java.util.HashMap<>();
+            axis2MC.setProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS, transportHeaders);
+        }
+        transportHeaders.putAll(headers);
     }
     
     public static String readJsonPayload(MessageContext synCtx) throws Exception {
@@ -66,5 +90,5 @@ public class MiPayloadUtil {
 
         return (payload == null || payload.isBlank()) ? "{}" : payload;
     }
-    
+
 }

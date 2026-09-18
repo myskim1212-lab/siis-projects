@@ -22,6 +22,73 @@ public class ApiResponseFactory {
     private static final String CODE_SYSTEM_ERROR = "E500"; // 시스템/전체 에러
     private static final String CODE_CONFIG_VALIDATION_ERROR = "E400"; // 설정/검증 에러
 
+    /** 처리 건수를 응답 HTTP 헤더로 노출할 때 사용하는 헤더 이름 */
+    public static final String RECORD_COUNT_HEADER_NAME = "CUSTOM-LOG-recordcount";
+
+    /**
+     * 대표 오퍼레이션(최상위 오퍼레이션 중 DELETE/PROCEDURE를 스킵하고 남은 첫 번째 오퍼레이션,
+     * master/detail이면 master)의 처리 건수를 HTTP 응답 헤더용 문자열로 산정한다.
+     *
+     * 규칙:
+     *  - DELETE/PROCEDURE      : 대표 후보에서 제외(스킵)하고 다음 오퍼레이션을 확인
+     *  - INSERT/UPDATE/UPSERT : 수신 건수(requestRecordCount)
+     *  - SELECT                : 응답 건수(responseRecordCount)
+     *  - 최상위 오퍼레이션이 단 1개이고 그게 DELETE/PROCEDURE인 경우(다른 대표 후보가 없음):
+     *      전달된 데이터가 있으면(requestRecordCount > 0) 그 수신 건수를 반영,
+     *      데이터가 없으면 빈 문자열("")
+     *  - 최상위 오퍼레이션이 여러 개인데 전부 DELETE/PROCEDURE뿐이라 대표를 찾을 수 없는 경우: 빈 문자열("")
+     *  - 대표 오퍼레이션 실패/스킵 또는 실행 결과를 찾을 수 없는 경우: "0"
+     */
+    public static String resolveRecordCountHeader(JdbcConfig jcfg, JdbcExecutionResult execResult) {
+        if (jcfg == null || jcfg.getOperations() == null || jcfg.getOperations().isEmpty()
+                || execResult == null || execResult.getOperations().isEmpty()) {
+            return "0";
+        }
+
+        List<OperationConfig> topLevelOps = jcfg.getOperations();
+
+        OperationConfig representative = topLevelOps.stream()
+                .filter(op -> op.getAction_type() != ActionType.DELETE
+                        && op.getAction_type() != ActionType.PROCEDURE)
+                .findFirst()
+                .orElse(null);
+
+        if (representative == null) {
+            if (topLevelOps.size() == 1) {
+                // 최상위 오퍼레이션이 단 1개뿐이고 그게 DELETE/PROCEDURE인 경우:
+                // 데이터가 전달됐는지에 따라 그 오퍼레이션 자체를 대표로 삼는다.
+                representative = topLevelOps.get(0);
+            } else {
+                // 여러 최상위 오퍼레이션이 전부 DELETE/PROCEDURE뿐인 경우
+                return "";
+            }
+        }
+
+        String representativeName = representative.getOperation_name();
+
+        JdbcExecutionOperationResult rep = execResult.getOperations().stream()
+                .filter(r -> representativeName.equals(r.getOperationName()))
+                .findFirst()
+                .orElse(null);
+
+        if (rep == null || rep.isSkipped() || !rep.isSuccess()) {
+            return "0";
+        }
+
+        if (rep.getActionType() == ActionType.SELECT) {
+            return String.valueOf(rep.getResponseRecordCount());
+        }
+
+        if ((rep.getActionType() == ActionType.DELETE || rep.getActionType() == ActionType.PROCEDURE)
+                && rep.getRequestRecordCount() <= 0) {
+            // 단일 DELETE/PROCEDURE 오퍼레이션인데 전달된 데이터가 없는 경우
+            return "";
+        }
+
+        // INSERT / UPSERT / UPDATE / (데이터가 존재하는 단일 DELETE·PROCEDURE)
+        return String.valueOf(rep.getRequestRecordCount());
+    }
+
     /**
      * [CASE 1] 시스템 예외 발생 시 (DB 연결 전이나 실행 중 치명적 예외)
      */

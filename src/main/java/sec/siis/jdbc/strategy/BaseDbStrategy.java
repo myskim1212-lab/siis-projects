@@ -170,7 +170,7 @@ public abstract class BaseDbStrategy implements DbStrategy {
     }
 
     @Override
-    public List<Map<String, Object>> executeProcedure(Connection conn, String txUnitId, EffectiveOperationConfig eop, List<Map<String, Object>> rows) throws Exception {
+    public List<Map<String, Object>> executeProcedure(Connection conn, String txUnitId, EffectiveOperationConfig eop, List<Map<String, Object>> rows, int batchSize) throws Exception {
         String callSql = String.format("{CALL %s}", eop.getSql());
         if (!eop.isSqlLogged()) {
             LogMessageManager.debugSqlStatement(log, msgID, eop.getApi_name(), txUnitId, eop.getOperation_name(), callSql);
@@ -218,12 +218,13 @@ public abstract class BaseDbStrategy implements DbStrategy {
                     }
                 }
             }
-        } else {
+        } else if (hasOut) {
+            // OUT/INOUT이 하나라도 있는 경우 — 기존 동작 그대로 유지 (변경 없음).
+            // JDBC 배치와 registerOutParameter를 함께 쓰는 동작은 드라이버마다 정의되어
+            // 있지 않으므로, 이 경로는 절대 addBatch를 쓰지 않고 행마다 즉시 execute()한다.
             ParsedSql parsedSql = parseNamedParameters(callSql, rows.get(0), eop.getFields());
             try (CallableStatement cstmt = conn.prepareCall(parsedSql.sql)) {
-                if (hasOut) {
-                    registerOutParametersByIndex(cstmt, parsedSql, eop.getFieldMap());
-                }
+                registerOutParametersByIndex(cstmt, parsedSql, eop.getFieldMap());
                 for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++) {
                     Map<String, Object> row = rows.get(rowIndex);
                     bindProcParameters(cstmt, parsedSql, eop.getFieldMap(), eop, row);
@@ -231,8 +232,45 @@ public abstract class BaseDbStrategy implements DbStrategy {
                         LogMessageManager.infoDumpSqlBindings(log, msgID, eop.getApi_name(), txUnitId, eop.getOperation_name(), rowIndex, buildBindingDump(parsedSql, eop.getFieldMap(), row));
                     }
                     cstmt.execute();
-                    if (hasOut) {
-                        outResults.add(collectOutValuesByIndex(cstmt, parsedSql, eop.getFieldMap(), outFields));
+                    outResults.add(collectOutValuesByIndex(cstmt, parsedSql, eop.getFieldMap(), outFields));
+                }
+            }
+        } else {
+            // 파라메터가 전부 IN인 경우 — addBatch()로 묶어서 실행해 왕복 횟수를 줄인다.
+            // OUT 값을 읽을 필요가 없으므로(outResults는 null) 행마다 즉시 execute()해서
+            // 결과를 확인할 이유가 없다 — 기존에도 이 경로의 반환값은 항상 null이었다.
+            ParsedSql parsedSql = parseNamedParameters(callSql, rows.get(0), eop.getFields());
+            try (CallableStatement cstmt = conn.prepareCall(parsedSql.sql)) {
+                if (parsedSql.paramNames.isEmpty()) {
+                    // 바인딩할 파라메터가 하나도 없는 프로시저(예: TB_USER_V2_PROC() 처럼
+                    // fields가 정의되지 않은 무인자 호출)는 addBatch() 대상에서 제외한다.
+                    // Oracle JDBC 드라이버는 바인드 변수가 없는 CallableStatement에
+                    // addBatch()를 여러 번 호출하면 "호출에 부적합한 인수입니다"(ORA-17433)
+                    // 오류를 던지므로, 이 경우는 기존처럼 행마다 즉시 execute()한다.
+                    for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++) {
+                        if (eop.isDataDump()) {
+                            LogMessageManager.infoDumpSqlBindings(log, msgID, eop.getApi_name(), txUnitId, eop.getOperation_name(), rowIndex, buildBindingDump(parsedSql, eop.getFieldMap(), rows.get(rowIndex)));
+                        }
+                        cstmt.execute();
+                    }
+                } else {
+                    int pending = 0;
+                    for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++) {
+                        Map<String, Object> row = rows.get(rowIndex);
+                        bindProcParameters(cstmt, parsedSql, eop.getFieldMap(), eop, row);
+                        if (eop.isDataDump()) {
+                            LogMessageManager.infoDumpSqlBindings(log, msgID, eop.getApi_name(), txUnitId, eop.getOperation_name(), rowIndex, buildBindingDump(parsedSql, eop.getFieldMap(), row));
+                        }
+                        cstmt.addBatch();
+                        pending++;
+                        if (pending == batchSize) {
+                            cstmt.executeBatch();
+                            cstmt.clearBatch();
+                            pending = 0;
+                        }
+                    }
+                    if (pending > 0) {
+                        cstmt.executeBatch();
                     }
                 }
             }
@@ -532,19 +570,19 @@ public abstract class BaseDbStrategy implements DbStrategy {
 	            String val = rs.getString(index);
 	            yield (val != null) ? val.trim() : ""; // null 보단 빈 문자열이 안전할 수 있음
 	        }
-	        
+
 	        case Types.CLOB, Types.NCLOB -> extractClob(rs, index);
             case Types.BLOB ->extractBlob(rs, index);
-            
+
 //            case Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> {
 //                Timestamp ts = rs.getTimestamp(index);
 //                if (ts == null) yield null;
-//                
+//
 //                // 핵심 수정: toLocalDateTime() 대신 ZonedDateTime을 사용하여 타임존(XXX) 대응
 //                yield ts.toInstant()
 //                        .atZone(ZoneId.systemDefault()) // 시스템 기본 시간대 적용
 //                        .format(jcfg.getPrimaryTimestampFormatter()); // JDBCConfig 로딩 시점에 Formatter 설정
-//            } 
+//            }
             case Types.TIMESTAMP -> {
                 Timestamp ts = rs.getTimestamp(index);
                 if (ts == null) yield null;
@@ -555,13 +593,13 @@ public abstract class BaseDbStrategy implements DbStrategy {
             case Types.TIMESTAMP_WITH_TIMEZONE -> {
                 if (rs.getObject(index) == null) yield null;
                 yield extractZonedTimestamp(rs, index, jcfg);  // 별도 메서드로 위임
-            }         
+            }
             case Types.DATE -> {
                 Date date = rs.getDate(index);
                 if (date == null) yield null;
                 yield date.toLocalDate().format(jcfg.getPrimaryDateFormatter());  // JDBCConfig 로딩 시점에 Formatter 설정
-            }            
-            
+            }
+
             default -> rs.getObject(index);
         };
     }

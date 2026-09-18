@@ -36,11 +36,17 @@ public interface DbStrategy {
             EffectiveOperationConfig eop,
             List<Map<String, Object>> params) throws Exception;
 
+    /**
+     * @param batchSize 파라메터가 전부 IN(OUT/INOUT 없음)인 다중 행 호출을 addBatch()로
+     *                  묶어 실행할 때 executeBatch()를 몇 행마다 플러시할지. OUT/INOUT이
+     *                  하나라도 있으면 지금까지처럼 행마다 즉시 execute()하므로 사용되지 않는다.
+     */
     List<Map<String, Object>> executeProcedure(
             Connection conn,
             String txUnitId,
             EffectiveOperationConfig eop,
-            List<Map<String, Object>> rows) throws Exception;
+            List<Map<String, Object>> rows,
+            int batchSize) throws Exception;
 
     /**
      * Bulk DML 처리: Iterator 기반으로 행을 순차 처리하고 chunkCommitSize 단위로 커밋한다.

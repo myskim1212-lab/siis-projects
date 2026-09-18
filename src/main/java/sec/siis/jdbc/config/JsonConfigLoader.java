@@ -179,11 +179,13 @@ public class JsonConfigLoader {
 	    }
 	    
 	    // 파라미터 전용 필드 수집
+	    /*
 	    if (op.getParam_fields() != null) {
 	        for (FieldConfig fc : op.getParam_fields()) {
 	            if (fc.getParam() != null) definedParams.add(fc.getParam());
 	        }
 	    }
+	    */
 
 	    // [추가] 상속 필드 수집 (YAML에서 수정한 부분)
 	    if (op.getInherit_fields() != null) {
