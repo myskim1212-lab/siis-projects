@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>siis.management</groupId>
+    <artifactId>SIISManagementApiConfigs</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+  <groupId>siis.management</groupId>
+  <artifactId>SIISManagementApiConfigs_module</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>SIISManagementApiConfigs_module</name>
+  <description>SIISManagementApiConfigs_module</description>
+  <modules>
+    <module>api/SIISManagementApi_v1</module>
+    <module>metadata/SIISManagementApi_v1_swagger</module>
+    <module>metadata/SIISManagementApi_v1_metadata</module>
+  </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.wso2.maven</groupId>
+        <artifactId>synapse-unit-test-maven-plugin</artifactId>
+        <version>5.2.42</version>
+        <executions>
+          <execution>
+            <id>synapse-unit-test</id>
+            <phase>null</phase>
+          </execution>
+        </executions>
+        <configuration />
+      </plugin>
+    </plugins>
+  </build>
+</project>

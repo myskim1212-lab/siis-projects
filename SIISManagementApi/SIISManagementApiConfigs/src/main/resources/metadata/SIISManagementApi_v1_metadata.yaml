@@ -1,0 +1,11 @@
+---
+key: "SIISManagementApi-v1"
+name : "SIISManagementApi"
+displayName : "SIISManagementApi"
+description: "Sample API"
+version: "v1"
+serviceUrl: "https://{MI_HOST}:{MI_PORT}/mi/management"
+definitionType: "OAS3"
+securityType: "BASIC"
+mutualSSLEnabled: false
+apiId : "null"

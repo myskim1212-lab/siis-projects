@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/mi/monitor/v1" name="SIISSManagementApi" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST" uri-template="/jvminfo">
+        <inSequence>
+            <property expression="get-property('SYSTEM_TIME')" name="startTime" scope="default" type="STRING"/>
+            <log level="custom">
+                <property name="Started SiiS Jvm Monitor Service : " value="get jvminfo"/>
+            </log>
+            <class name="sec.siis.jvm.mediator.JvmInfoMediator"/>
+            <property expression="get-property('SYSTEM_TIME')" name="endTime" scope="default" type="STRING"/>
+            <property expression="fn:string($ctx:endTime - $ctx:startTime)" name="elapsedTime" scope="default" type="STRING"/>
+            <property expression="fn:concat($ctx:elapsedTime,'ms')" name="API Total Elapsed Time" scope="default" type="STRING"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+    <resource methods="POST" uri-template="/logviewer">
+        <inSequence>
+            <property expression="get-property('SYSTEM_TIME')" name="startTime" scope="default" type="STRING"/>
+            <log level="custom">
+                <property name="Started SiiS Log Viewer Service : " value="get logviewer"/>
+            </log>
+            <class name="sec.siis.log.mediator.LogViewerMediator"/>
+            <property expression="get-property('SYSTEM_TIME')" name="endTime" scope="default" type="STRING"/>
+            <property expression="fn:string($ctx:endTime - $ctx:startTime)" name="elapsedTime" scope="default" type="STRING"/>
+            <property expression="fn:concat($ctx:elapsedTime,'ms')" name="API Total Elapsed Time" scope="default" type="STRING"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+</api>

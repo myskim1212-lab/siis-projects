@@ -1,0 +1,38 @@
+openapi: 3.0.1
+info:
+  title: SIISSManagementApi
+  description: API Definition of SIISManagementApi
+  version: 1.0.0
+servers:
+- url: http://localhost:8290/mi/monitor/v1
+paths:
+  /jvminfo:
+    post:
+      requestBody:
+        description: Sample Payload
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payload:
+                  type: object
+        required: false
+      responses:
+        default:
+          description: Default response
+  /logviewer:
+    post:
+      requestBody:
+        description: Sample Payload
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payload:
+                  type: object
+        required: false
+      responses:
+        default:
+          description: Default response
