@@ -1,0 +1,6 @@
+# operations 배열이 비어 있음 (검증 테스트용)
+api_name: test_empty_operations
+target_system_key: TEST_ORACLE
+target_jndi_name: jdbc/TEST
+
+operations: []

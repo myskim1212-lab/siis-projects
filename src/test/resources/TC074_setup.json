@@ -1,0 +1,60 @@
+{
+    "operations": {
+        "delete_tb_user_v2_d1": null,
+        "delete_tb_user_v2_d2": null,
+        "delete_tb_user_v2_d3": null,
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": "JN74_1",
+                    "USER_NAME": "Join_Test_74",
+                    "USER_NICK": "JT74",
+                    "USER_CODE": "CD_JN74",
+                    "USER_DESC": "JOIN test user for TC074",
+                    "USER_AGE": 30,
+                    "USER_COUNT": 100,
+                    "USER_BIGINT": 100000000074,
+                    "USER_SCORE": 74.74,
+                    "USER_RATE": 0.74747474,
+                    "USER_RATIO": 7.4740,
+                    "USER_WEIGHT": 74.7400,
+                    "CREATED_DATE": "2026-04-01",
+                    "UPDATED_TS": "2026-04-01T00:00:00.000",
+                    "UPDATED_TZ": "2026-04-01T00:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-04-01T00:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "VEMwNzQ=",
+                    "META_JSON": "{\"tc\":\"TC074\",\"type\":\"join\"}",
+                    "TAGS": "join,tc074,test",
+                    "USER_XML": "<user><tc>TC074</tc></user>",
+                    "OPTIONAL_COL": "TC074",
+                    "tb_user_v2_d1": [
+                        {
+                            "HIST_ID": 1,
+                            "CHANGE_TYPE": "INSERT",
+                            "CHANGE_DESC": "최초 등록",
+                            "CHANGE_DTTM": "2026-04-01T09:00:00.000",
+                            "CREATED_BY": "tc074"
+                        },
+                        {
+                            "HIST_ID": 2,
+                            "CHANGE_TYPE": "UPDATE",
+                            "CHANGE_DESC": "닉네임 변경",
+                            "CHANGE_DTTM": "2026-04-01T10:00:00.000",
+                            "CREATED_BY": "tc074"
+                        },
+                        {
+                            "HIST_ID": 3,
+                            "CHANGE_TYPE": "UPDATE",
+                            "CHANGE_DESC": "상태 변경",
+                            "CHANGE_DTTM": "2026-04-01T11:00:00.000",
+                            "CREATED_BY": "tc074"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

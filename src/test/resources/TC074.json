@@ -1,0 +1,11 @@
+{
+    "operations": {
+        "select_user_join_history": {
+            "data": [
+                {
+                    "USER_ID": "JN74_1"
+                }
+            ]
+        }
+    }
+}

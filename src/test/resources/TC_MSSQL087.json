@@ -1,0 +1,12 @@
+{
+    "operations": {
+        "proc_tb_user_v2_out": {
+            "data": [
+                {
+                    "USER_ID": "NOT_EXIST_ID",
+                    "USER_NAME": "없는사용자"
+                }
+            ]
+        }
+    }
+}

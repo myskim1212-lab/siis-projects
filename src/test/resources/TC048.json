@@ -1,0 +1,11 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {"USER_ID":"SQL_1","USER_NAME":"SELECT * FROM users WHERE 1=1","USER_NICK":"SQL1","USER_CODE":"DROP TABLE users; --","USER_DESC":"SQL Injection attempt data (stored as literal string):\nSELECT * FROM users WHERE 1=1; DROP TABLE users; --\nUNION SELECT username, password FROM admin\nOR '1'='1'","USER_AGE":25,"USER_COUNT":1000,"USER_BIGINT":922337203685477580,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"c3Fs","META_JSON":"{\"sql\":\"SELECT 1\"}","TAGS":"sql,keyword,injection","USER_XML":"<user><sql>SELECT 1</sql></user>","OPTIONAL_COL":"TC048"},
+                {"USER_ID":"SQL_2","USER_NAME":"INSERT INTO admin VALUES('hack')","USER_NICK":"SQL2","USER_CODE":"UPDATE users SET admin=1","USER_DESC":"More SQL keywords as data:\nINSERT INTO admin VALUES('hack');\nDELETE FROM logs WHERE 1=1;\nCREATE TABLE evil (id INT);\nALTER TABLE users ADD COLUMN hacked BOOLEAN;","USER_AGE":30,"USER_COUNT":2000,"USER_BIGINT":922337203685477581,"USER_SCORE":77.77,"USER_RATE":0.456,"USER_RATIO":2.34,"USER_WEIGHT":60.0,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"N","IS_DELETED":"N","USER_PROFILE":"c3Fs","META_JSON":"{\"sql\":\"DELETE FROM\"}","TAGS":"sql,delete,create","USER_XML":"<user><sql>INSERT INTO</sql></user>","OPTIONAL_COL":"TC048"}
+            ]
+        }
+    }
+}

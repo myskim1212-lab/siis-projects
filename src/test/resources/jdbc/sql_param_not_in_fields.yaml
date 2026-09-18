@@ -1,0 +1,14 @@
+# SQL에 :STATUS 파라미터가 있지만 fields 에 없음 (검증 테스트용)
+api_name: test_param_not_in_fields
+target_system_key: TEST_ORACLE
+target_jndi_name: jdbc/TEST
+
+operations:
+  - operation_name: test_op
+    action_type: SELECT
+    sql: |
+      SELECT USER_ID FROM TB_USER
+      WHERE USER_ID = :USER_ID AND STATUS = :STATUS
+    fields:
+      - { data_field: USER_ID, param: USER_ID, type: STRING }
+      # STATUS param 의도적 누락

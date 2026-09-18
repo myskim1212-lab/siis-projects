@@ -1,0 +1,43 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": "DEC_01",
+                    "USER_NAME": "Before_Decimal",
+                    "USER_NICK": "NK_DEC01",
+                    "USER_CODE": "CD_DEC",
+                    "USER_DESC": "Setup row for DECIMAL WHERE test",
+                    "USER_AGE": 30,
+                    "USER_COUNT": 500,
+                    "USER_BIGINT": 922337203685477580,
+                    "USER_SCORE": 123.45,
+                    "USER_RATE": 0.12345678,
+                    "USER_RATIO": 1.2345,
+                    "USER_WEIGHT": 75.4321,
+                    "CREATED_DATE": "2026-01-01",
+                    "UPDATED_TS": "2026-01-01T00:00:00.000",
+                    "UPDATED_TZ": "2026-01-01T00:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-01-01T00:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "QklOQVJZXzE=",
+                    "META_JSON": "{\"tc\":\"TC069\",\"phase\":\"before\"}",
+                    "TAGS": "before,tc069",
+                    "USER_XML": "<user><status>before</status></user>",
+                    "OPTIONAL_COL": "TC069_BEFORE"
+                }
+            ]
+        },
+        "update_tb_user_v2_decimal_where": {
+            "data": [
+                {
+                    "USER_SCORE": 123.45,
+                    "USER_NAME": "Decimal_Updated",
+                    "IS_ACTIVE": "U"
+                }
+            ]
+        }
+    }
+}

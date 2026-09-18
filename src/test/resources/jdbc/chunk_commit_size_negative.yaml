@@ -1,0 +1,14 @@
+# chunk_commit_size 에 음수를 설정한 경우 → 검증 에러 발생해야 함
+api_name: test_chunk_commit_size_negative
+target_system_key: TEST
+target_jndi_name: jdbc/TEST
+operations:
+  - operation_name: insert_op
+    action_type: INSERT
+    data_record: data
+    bulk: true
+    chunk_commit_size: -1
+    sql: |
+      INSERT INTO TB_USER (USER_ID) VALUES (:USER_ID)
+    fields:
+      - { data_field: USER_ID, param: USER_ID, type: STRING }

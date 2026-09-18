@@ -1,0 +1,56 @@
+{
+    "payload": {
+        "rows": [
+            {
+                "USER_ID": "PLD80_1",
+                "USER_NAME": "Payload_80_1",
+                "USER_NICK": "PLD80_1",
+                "USER_CODE": "PLD80_001",
+                "USER_DESC": "TC080 payload 경로 테스트 - DELETE/PROC은 rows 키 없이 실행, INSERT는 rows 파싱",
+                "USER_AGE": 30,
+                "USER_COUNT": 1,
+                "USER_BIGINT": 100000041,
+                "USER_SCORE": 80.1,
+                "USER_RATE": 0.801,
+                "USER_RATIO": 1.801,
+                "USER_WEIGHT": 75.0,
+                "CREATED_DATE": "2026-04-02",
+                "UPDATED_TS": "2026-04-02T11:00:00.000",
+                "UPDATED_TZ": "2026-04-02T11:00:00.000+09:00",
+                "UPDATED_LTZ": "2026-04-02T11:00:00.000+09:00",
+                "IS_ACTIVE": "Y",
+                "IS_DELETED": "N",
+                "USER_PROFILE": "QklOQVJZXzE=",
+                "META_JSON": "{\"tc\": \"080\", \"row\": 1}",
+                "TAGS": "payload,test,80",
+                "USER_XML": "<user><id>PLD80_1</id></user>",
+                "OPTIONAL_COL": "TC080"
+            },
+            {
+                "USER_ID": "PLD80_2",
+                "USER_NAME": "Payload_80_2",
+                "USER_NICK": "PLD80_2",
+                "USER_CODE": "PLD80_002",
+                "USER_DESC": "TC080 payload 경로 테스트 - row2",
+                "USER_AGE": 31,
+                "USER_COUNT": 2,
+                "USER_BIGINT": 100000042,
+                "USER_SCORE": 80.2,
+                "USER_RATE": 0.802,
+                "USER_RATIO": 1.802,
+                "USER_WEIGHT": 75.1,
+                "CREATED_DATE": "2026-04-02",
+                "UPDATED_TS": "2026-04-02T11:00:00.000",
+                "UPDATED_TZ": "2026-04-02T11:00:00.000+09:00",
+                "UPDATED_LTZ": "2026-04-02T11:00:00.000+09:00",
+                "IS_ACTIVE": "Y",
+                "IS_DELETED": "N",
+                "USER_PROFILE": "QklOQVJZXzI=",
+                "META_JSON": "{\"tc\": \"080\", \"row\": 2}",
+                "TAGS": "payload,test,80",
+                "USER_XML": "<user><id>PLD80_2</id></user>",
+                "OPTIONAL_COL": "TC080"
+            }
+        ]
+    }
+}

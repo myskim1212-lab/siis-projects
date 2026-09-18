@@ -1,0 +1,18 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -- %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- suppress noisy Apache HttpClient wire/debug logs -->
+    <logger name="org.apache.hc" level="WARN"/>
+    <logger name="org.apache.http" level="WARN"/>
+
+    <!-- test code logs at INFO -->
+    <logger name="siis.jdbc.api.test" level="INFO"/>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

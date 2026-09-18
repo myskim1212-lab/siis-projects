@@ -1,0 +1,10 @@
+{
+  "operations": {
+    "delete_tb_user_v2": {
+      "data": null
+    },
+    "insert_tb_user_v2": {
+      "data": []
+    }
+  }
+}

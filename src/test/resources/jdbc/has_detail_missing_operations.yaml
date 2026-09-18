@@ -1,0 +1,13 @@
+# has_detail: true 인데 detail_operations 가 없는 경우 → 검증 에러 발생해야 함
+api_name: test_has_detail_missing_ops
+target_system_key: TEST
+target_jndi_name: jdbc/TEST
+operations:
+  - operation_name: master_op
+    action_type: INSERT
+    data_record: data
+    has_detail: true
+    sql: |
+      INSERT INTO TB_MASTER (MASTER_ID) VALUES (:MASTER_ID)
+    fields:
+      - { data_field: MASTER_ID, param: MASTER_ID, type: STRING }

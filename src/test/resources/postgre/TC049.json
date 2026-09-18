@@ -1,0 +1,34 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": "NUM_1",
+                    "USER_NAME": "Numeric_Precision_1",
+                    "USER_NICK": "NUM1",
+                    "USER_CODE": "NUM_CODE_1",
+                    "USER_DESC": "Numeric precision test record",
+                    "USER_AGE": 99,
+                    "USER_COUNT": 999999,
+                    "USER_BIGINT": 9223372036854775807,
+                    "USER_SCORE": 3.141592653589793,
+                    "USER_RATE": 1.4142136,
+                    "USER_RATIO": 2.7182817,
+                    "USER_WEIGHT": 1.7320508075688772,
+                    "CREATED_DATE": "2026-01-01",
+                    "UPDATED_TS": "2026-01-01T00:00:00.000",
+                    "UPDATED_TZ": "2026-01-01T00:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-01-01T00:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "bnVtZXJpYw==",
+                    "META_JSON": "{\"pi\":3.14159,\"e\":2.71828}",
+                    "TAGS": "numeric,precision",
+                    "USER_XML": "<user><pi>3.14159</pi></user>",
+                    "OPTIONAL_COL": "TC049"
+                }
+            ]
+        }
+    }
+}

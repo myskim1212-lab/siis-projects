@@ -1,0 +1,11 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {"USER_ID":"HX_1","USER_NAME":"HTML_User_1 <>&\"'","USER_NICK":"HX1","USER_CODE":"HX_CODE_1","USER_DESC":"HTML entities: &lt;tag&gt; &amp; &quot;quoted&quot; &apos;apos&apos;\nXML: <root><child attr=\"val\">text &amp; more</child></root>\nSpecial: <!-- comment --> <![CDATA[data]]>","USER_AGE":25,"USER_COUNT":1000,"USER_BIGINT":922337203685477580,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"aHRtbA==","META_JSON":"{\"html\":true,\"tag\":\"<b>bold</b>\"}","TAGS":"html,xml,special","USER_XML":"<user><data><![CDATA[<html>&amp;</html>]]></data></user>","OPTIONAL_COL":"TC047"},
+                {"USER_ID":"HX_2","USER_NAME":"XML_User_2 </xss>","USER_NICK":"HX2","USER_CODE":"HX_CODE_2","USER_DESC":"More XML special chars:\n<?xml version='1.0'?>\n<root xmlns:ns=\"http://example.com\">\n  <ns:child>value &amp; more</ns:child>\n</root>","USER_AGE":30,"USER_COUNT":2000,"USER_BIGINT":922337203685477581,"USER_SCORE":77.77,"USER_RATE":0.456,"USER_RATIO":2.34,"USER_WEIGHT":60.0,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"N","IS_DELETED":"N","USER_PROFILE":"eG1s","META_JSON":"{\"xml\":true}","TAGS":"xml,namespace","USER_XML":"<user><xss>&lt;/xss&gt;</xss></user>","OPTIONAL_COL":"TC047"}
+            ]
+        }
+    }
+}

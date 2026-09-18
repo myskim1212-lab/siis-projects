@@ -1,0 +1,11 @@
+{
+  "operations": {
+    "select_tb_user_v2": {
+      "data": [
+        {
+          "USER_ID": "NOTEXIST_99999999"
+        }
+      ]
+    }
+  }
+}

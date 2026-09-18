@@ -1,0 +1,15 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {"USER_ID":"ID_1","USER_NAME":"Setup_1","USER_NICK":"NK1","USER_CODE":"CD1","USER_DESC":"TC062 setup row","USER_AGE":20,"USER_COUNT":1000,"USER_BIGINT":922337203685477580,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzE=","META_JSON":"{\"k\":1}","TAGS":"t1","USER_XML":"<u><id>1</id></u>","OPTIONAL_COL":"TC062"}
+            ]
+        },
+        "upsert_tb_user_v2": {
+            "data": [
+                {"USER_ID":"ID_2","USER_NAME":"Upsert_New_2","USER_NICK":"UNK2","USER_CODE":"UCD2","USER_DESC":"TC062 upsert new row","USER_AGE":25,"USER_COUNT":2000,"USER_BIGINT":222222222222222222,"USER_SCORE":75.5,"USER_RATE":0.55555555,"USER_RATIO":5.5555,"USER_WEIGHT":55.5555,"CREATED_DATE":"2026-06-01","UPDATED_TS":"2026-06-01T12:00:00.000","UPDATED_TZ":"2026-06-01T12:00:00.000+09:00","UPDATED_LTZ":"2026-06-01T12:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzI=","META_JSON":"{\"tc\":\"TC062\",\"op\":\"insert\"}","TAGS":"upsert,insert","USER_XML":"<u><op>insert</op></u>","OPTIONAL_COL":"TC062_INSERT"}
+            ]
+        }
+    }
+}

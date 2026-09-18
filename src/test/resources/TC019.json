@@ -1,0 +1,85 @@
+{
+    "operations": {
+        "delete_tb_user_v2_d1": null,
+        "delete_tb_user_v2_d2": null,
+        "delete_tb_user_v2_d3": null,
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": "ID_1001",
+                    "USER_NAME": "테스터_1001",
+                    "USER_NICK": "NICK_1",
+                    "USER_CODE": "🔑_韓_1001_∑_π_Ω_★_㏘",
+                    "USER_DESC": "--- 복합 특수문자 리포트 ---\n줄바꿈(LF) 및 탭(TAB)\t체크\n이모지: 🚀, 💡, 🛠️, 📉\n수학/기술: √, ∞, ±, ≠, ⊆, ⊗\n괄호/인용: 「」, 『』, 〈〉, “”, ‘’\n데이터 번호: 1001",
+                    "USER_AGE": 20,
+                    "USER_COUNT": 1000,
+                    "USER_BIGINT": 922337203685477580,
+                    "USER_SCORE": 88.1234,
+                    "USER_RATE": 0.12345678,
+                    "USER_RATIO": 1.2345,
+                    "USER_WEIGHT": 75.4321,
+                    "CREATED_DATE": "2026-02-09",
+                    "UPDATED_TS": "2026-02-09T13:22:20.647",
+                    "UPDATED_TZ": "2026-02-09T13:22:20.647301+09:00",
+                    "UPDATED_LTZ": "2026-02-09T13:22:20.647301+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "QklOQVJZXzEwMDE=",
+                    "META_JSON": "{\"desc\": \"특수문자 텍스트: ★\", \"val\": 0}",
+                    "TAGS": "java,∑,Ω,test",
+                    "USER_XML": "<user><msg>안녕 🚀</msg><id>1001</id></user>",
+                    "OPTIONAL_COL": null,
+                    "tb_user_v2_d1": [
+                        {
+                            "HIST_ID": 1,
+                            "CHANGE_TYPE": "UPDATE",
+                            "CHANGE_DESC": "닉네임변경",
+                            "CHANGE_DTTM": "2026-02-09T13:22:20.647",
+                            "CREATED_BY": "admin"
+                        },
+                        {
+                            "HIST_ID": 2,
+                            "CHANGE_TYPE": "UPDATE",
+                            "CHANGE_DESC": "주소변경",
+                            "CHANGE_DTTM": "2026-02-09T13:22:20.647",
+                            "CREATED_BY": "admin"
+                        }
+                    ],
+                    "tb_user_v2_d2": [
+                        {
+                            "HIST_ID": 1,
+                            "CHANGE_TYPE": "UPDATE",
+                            "CHANGE_DESC": "닉네임변경",
+                            "CHANGE_DTTM": "2026-02-09T13:22:20.647",
+                            "CREATED_BY": "admin"
+                        },
+                        {
+                            "HIST_ID": 2,
+                            "CHANGE_TYPE": "UPDATE",
+                            "CHANGE_DESC": "주소변경",
+                            "CHANGE_DTTM": "2026-02-09T13:22:20.647",
+                            "CREATED_BY": "admin"
+                        }
+                    ],
+                    "tb_user_v2_d3": [
+                        {
+                            "HIST_ID": 1,
+                            "CHANGE_TYPE": "UPDATE",
+                            "CHANGE_DESC": "닉네임변경",
+                            "CHANGE_DTTM": "2026-02-09T13:22:20.647",
+                            "CREATED_BY": "admin"
+                        },
+                        {
+                            "HIST_ID": 2,
+                            "CHANGE_TYPE": "UPDATE",
+                            "CHANGE_DESC": "주소변경",
+                            "CHANGE_DTTM": "2026-02-09T13:22:20.647",
+                            "CREATED_BY": "admin"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

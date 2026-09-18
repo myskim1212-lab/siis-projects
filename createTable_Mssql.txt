@@ -1,0 +1,331 @@
+-- ====================================================================================================
+-- 기능테스트 메인 테이블 (MSSQL)
+-- ====================================================================================================
+
+CREATE TABLE TB_USER_V2 (
+    /* ===============================
+       1) 식별자 / 키 계열
+       =============================== */
+    USER_ID        VARCHAR(100)         NOT NULL,      -- PK
+    USER_SEQ       BIGINT               IDENTITY(1,1), -- GENERATED ALWAYS AS IDENTITY 대체
+
+    /* ===============================
+       2) 문자열 계열
+       =============================== */
+    USER_NAME      VARCHAR(100)         NOT NULL,
+    USER_NICK      CHAR(20),
+    USER_CODE      NVARCHAR(50),                       -- 다국어 테스트
+    USER_DESC      NVARCHAR(MAX),                      -- CLOB 대체
+
+    /* ===============================
+       3) 숫자 계열 (종합 테스트)
+       =============================== */
+    USER_AGE       SMALLINT,                           -- NUMBER(3) 대체
+    USER_COUNT     INT,                                -- NUMBER(10) 대체
+    USER_BIGINT    BIGINT,                             -- NUMBER(19) 대체
+    USER_SCORE     DECIMAL(15,4),                      -- NUMBER(15,4) 대체
+    USER_RATE      FLOAT,                              -- FLOAT 유지
+    USER_RATIO     REAL,                               -- BINARY_FLOAT 대체
+    USER_WEIGHT    FLOAT(53),                          -- BINARY_DOUBLE 대체
+
+    /* ===============================
+       4) 날짜/시간 계열
+       =============================== */
+    CREATED_DATE   DATETIME2            DEFAULT GETDATE(),  -- DATE 대체
+    UPDATED_TS     DATETIME2,                               -- TIMESTAMP 대체
+    UPDATED_TZ     DATETIMEOFFSET,                          -- TIMESTAMP WITH TIME ZONE 대체
+    UPDATED_LTZ    DATETIMEOFFSET,                          -- TIMESTAMP WITH LOCAL TIME ZONE 대체 (MSSQL은 LTZ 미지원)
+
+    /* ===============================
+       5) BOOLEAN 대체 및 상태값
+       =============================== */
+    IS_ACTIVE      CHAR(1)              DEFAULT 'Y',    -- Y/N
+    IS_DELETED     CHAR(1)              DEFAULT 'N',
+
+    /* ===============================
+       6) 대용량 바이너리 계열
+       =============================== */
+    USER_PROFILE   VARBINARY(MAX),                     -- BLOB 대체
+    -- USER_DOC    : BFILE 미지원 (외부파일 경로를 VARCHAR로 관리 권장)
+    USER_DOC_PATH  VARCHAR(500),                       -- BFILE 대체 (파일 경로 저장)
+
+    /* ===============================
+       7) 구조형/특수 타입
+       =============================== */
+    META_JSON      NVARCHAR(MAX)        CHECK (ISJSON(META_JSON) = 1), -- JSON 검증
+    TAGS           VARCHAR(4000),                      -- CSV/ARRAY 대체
+    USER_XML       XML,                                -- XMLTYPE 대체
+
+    /* ===============================
+       8) NULL/옵션 테스트
+       =============================== */
+    OPTIONAL_COL   VARCHAR(100),
+
+    CONSTRAINT PK_TB_USER_V2 PRIMARY KEY (USER_ID)
+);
+
+CREATE INDEX IDX_USER_NAME ON TB_USER_V2(USER_NAME);
+CREATE INDEX IDX_USER_AGE  ON TB_USER_V2(USER_AGE);
+
+-- ====================================================================================================
+-- 프로시저 백업 테이블
+-- ====================================================================================================
+
+SELECT TOP 0 * INTO TB_USER_V2_BUSINESS FROM TB_USER_V2;
+-- ※ IDENTITY 컬럼은 복제되지 않음. 필요 시 ALTER TABLE로 추가
+
+-- ====================================================================================================
+-- 프로시저 생성
+-- ====================================================================================================
+
+CREATE OR ALTER PROCEDURE TB_USER_V2_PROC
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @v_cnt INT;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        INSERT INTO TB_USER_V2_BUSINESS (
+            USER_ID, USER_NAME, USER_NICK, USER_CODE, USER_DESC,
+            USER_AGE, USER_COUNT, USER_BIGINT, USER_SCORE, USER_RATE,
+            USER_RATIO, USER_WEIGHT, CREATED_DATE, UPDATED_TS,
+            UPDATED_TZ, UPDATED_LTZ, IS_ACTIVE, IS_DELETED,
+            USER_PROFILE, USER_DOC_PATH, META_JSON, TAGS, USER_XML, OPTIONAL_COL
+        )
+        SELECT
+            USER_ID, USER_NAME, USER_NICK, USER_CODE, USER_DESC,
+            USER_AGE, USER_COUNT, USER_BIGINT, USER_SCORE, USER_RATE,
+            USER_RATIO, USER_WEIGHT, CREATED_DATE, UPDATED_TS,
+            UPDATED_TZ, UPDATED_LTZ, IS_ACTIVE, IS_DELETED,
+            USER_PROFILE, USER_DOC_PATH, META_JSON, TAGS, USER_XML, OPTIONAL_COL
+        FROM TB_USER_V2;
+
+        SET @v_cnt = @@ROWCOUNT;
+
+        COMMIT TRANSACTION;
+
+        PRINT '복사 완료. 건수 = ' + CAST(@v_cnt AS VARCHAR);
+
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        PRINT '오류 발생: ' + ERROR_MESSAGE();
+        THROW;
+    END CATCH
+END;
+GO
+
+CREATE OR ALTER PROCEDURE TB_USER_V2_PROC_PARAM_OUT
+    @p_user_id    NVARCHAR(100),
+    @p_user_name  NVARCHAR(100),
+    @p_copy_cnt   INT          OUTPUT,
+    @p_result_msg NVARCHAR(500) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        INSERT INTO TB_USER_V2_BUSINESS (
+            USER_ID, USER_NAME, USER_NICK, USER_CODE, USER_DESC,
+            USER_AGE, USER_COUNT, USER_BIGINT, USER_SCORE, USER_RATE,
+            USER_RATIO, USER_WEIGHT, CREATED_DATE, UPDATED_TS,
+            UPDATED_TZ, UPDATED_LTZ, IS_ACTIVE, IS_DELETED,
+            USER_PROFILE, USER_DOC_PATH, META_JSON, TAGS, USER_XML, OPTIONAL_COL
+        )
+        SELECT
+            USER_ID, USER_NAME, USER_NICK, USER_CODE, USER_DESC,
+            USER_AGE, USER_COUNT, USER_BIGINT, USER_SCORE, USER_RATE,
+            USER_RATIO, USER_WEIGHT, CREATED_DATE, UPDATED_TS,
+            UPDATED_TZ, UPDATED_LTZ, IS_ACTIVE, IS_DELETED,
+            USER_PROFILE, USER_DOC_PATH, META_JSON, TAGS, USER_XML, OPTIONAL_COL
+        FROM TB_USER_V2
+        WHERE USER_ID   = @p_user_id
+          AND USER_NAME = @p_user_name;
+
+        SET @p_copy_cnt   = @@ROWCOUNT;
+        SET @p_result_msg = N'복사 완료. 건수 = ' + CAST(@p_copy_cnt AS NVARCHAR);
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        SET @p_copy_cnt   = -1;
+        SET @p_result_msg = N'오류 발생: ' + ERROR_MESSAGE();
+        THROW;
+    END CATCH
+END;
+GO
+
+CREATE OR ALTER PROCEDURE TB_USER_V2_PROC_PARAM
+    @p_user_id   NVARCHAR(100),
+    @p_user_name NVARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;        -- 영향받은 행 수 메시지 억제 (성능 향상)
+    
+    DECLARE @v_cnt INT;
+    
+    BEGIN TRY
+        BEGIN TRANSACTION;
+        
+            INSERT INTO TB_USER_V2_BUSINESS
+            SELECT *
+              FROM TB_USER_V2
+             WHERE USER_ID   = @p_user_id
+               AND USER_NAME = @p_user_name;
+               
+            SET @v_cnt = @@ROWCOUNT;    -- 직전 DML 처리 건수
+            
+        COMMIT TRANSACTION;
+        
+        PRINT '복사 완료. 건수 = ' + CAST(@v_cnt AS NVARCHAR);
+        
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0              -- 열린 트랜잭션이 있을 때만 롤백
+            ROLLBACK TRANSACTION;
+            
+        PRINT '오류 발생: ' + ERROR_MESSAGE();
+        THROW;                          -- 호출자에게 예외 전파 (Oracle RAISE 와 동일)
+    END CATCH;
+END;
+GO
+-- ====================================================================================================
+-- 멀티테이블 처리 테스트를 위한 테이블 생성
+-- ====================================================================================================
+
+CREATE TABLE TB_USER_V2_M1 (
+    USER_ID        VARCHAR(100)         NOT NULL,
+    USER_SEQ       BIGINT               IDENTITY(1,1),
+    USER_NAME      VARCHAR(100)         NOT NULL,
+    USER_NICK      CHAR(20),
+    USER_CODE      NVARCHAR(50),
+    USER_DESC      NVARCHAR(MAX),
+    USER_AGE       SMALLINT,
+    USER_COUNT     INT,
+    USER_BIGINT    BIGINT,
+    USER_SCORE     DECIMAL(15,4),
+    USER_RATE      FLOAT,
+    USER_RATIO     REAL,
+    USER_WEIGHT    FLOAT(53),
+    CREATED_DATE   DATETIME2            DEFAULT GETDATE(),
+    UPDATED_TS     DATETIME2,
+    UPDATED_TZ     DATETIMEOFFSET,
+    UPDATED_LTZ    DATETIMEOFFSET,
+    IS_ACTIVE      CHAR(1)              DEFAULT 'Y',
+    IS_DELETED     CHAR(1)              DEFAULT 'N',
+    USER_PROFILE   VARBINARY(MAX),
+    USER_DOC_PATH  VARCHAR(500),
+    META_JSON      NVARCHAR(MAX)        CHECK (ISJSON(META_JSON) = 1),
+    TAGS           VARCHAR(4000),
+    USER_XML       XML,
+    OPTIONAL_COL   VARCHAR(100),
+    CONSTRAINT PK_TB_USER_V2_M1 PRIMARY KEY (USER_ID)
+);
+
+CREATE TABLE TB_USER_V2_M2 (
+    USER_ID        VARCHAR(100)         NOT NULL,
+    USER_SEQ       BIGINT               IDENTITY(1,1),
+    USER_NAME      VARCHAR(100)         NOT NULL,
+    USER_NICK      CHAR(20),
+    USER_CODE      NVARCHAR(50),
+    USER_DESC      NVARCHAR(MAX),
+    USER_AGE       SMALLINT,
+    USER_COUNT     INT,
+    USER_BIGINT    BIGINT,
+    USER_SCORE     DECIMAL(15,4),
+    USER_RATE      FLOAT,
+    USER_RATIO     REAL,
+    USER_WEIGHT    FLOAT(53),
+    CREATED_DATE   DATETIME2            DEFAULT GETDATE(),
+    UPDATED_TS     DATETIME2,
+    UPDATED_TZ     DATETIMEOFFSET,
+    UPDATED_LTZ    DATETIMEOFFSET,
+    IS_ACTIVE      CHAR(1)              DEFAULT 'Y',
+    IS_DELETED     CHAR(1)              DEFAULT 'N',
+    USER_PROFILE   VARBINARY(MAX),
+    USER_DOC_PATH  VARCHAR(500),
+    META_JSON      NVARCHAR(MAX)        CHECK (ISJSON(META_JSON) = 1),
+    TAGS           VARCHAR(4000),
+    USER_XML       XML,
+    OPTIONAL_COL   VARCHAR(100),
+    CONSTRAINT PK_TB_USER_V2_M2 PRIMARY KEY (USER_ID)
+);
+
+CREATE TABLE TB_USER_V2_M3 (
+    USER_ID        VARCHAR(100)         NOT NULL,
+    USER_SEQ       BIGINT               IDENTITY(1,1),
+    USER_NAME      VARCHAR(100)         NOT NULL,
+    USER_NICK      CHAR(20),
+    USER_CODE      NVARCHAR(50),
+    USER_DESC      NVARCHAR(MAX),
+    USER_AGE       SMALLINT,
+    USER_COUNT     INT,
+    USER_BIGINT    BIGINT,
+    USER_SCORE     DECIMAL(15,4),
+    USER_RATE      FLOAT,
+    USER_RATIO     REAL,
+    USER_WEIGHT    FLOAT(53),
+    CREATED_DATE   DATETIME2            DEFAULT GETDATE(),
+    UPDATED_TS     DATETIME2,
+    UPDATED_TZ     DATETIMEOFFSET,
+    UPDATED_LTZ    DATETIMEOFFSET,
+    IS_ACTIVE      CHAR(1)              DEFAULT 'Y',
+    IS_DELETED     CHAR(1)              DEFAULT 'N',
+    USER_PROFILE   VARBINARY(MAX),
+    USER_DOC_PATH  VARCHAR(500),
+    META_JSON      NVARCHAR(MAX)        CHECK (ISJSON(META_JSON) = 1),
+    TAGS           VARCHAR(4000),
+    USER_XML       XML,
+    OPTIONAL_COL   VARCHAR(100),
+    CONSTRAINT PK_TB_USER_V2_M3 PRIMARY KEY (USER_ID)
+);
+
+-- ====================================================================================================
+-- 마스터 디테일 테스트를 위한 디테일 테이블 생성
+-- ====================================================================================================
+
+CREATE TABLE TB_USER_V2_D1 (
+    HIST_ID        INT              NOT NULL,      -- 이력 PK (NUMBER(10) 대체)
+    USER_ID        VARCHAR(100)     NOT NULL,      -- 부모키(FK)
+    CHANGE_TYPE    VARCHAR(20)      NOT NULL,
+    CHANGE_DESC    VARCHAR(200),
+    CHANGE_DTTM    DATETIME2        DEFAULT SYSDATETIME(),  -- SYSTIMESTAMP 대체
+    CREATED_BY     VARCHAR(50),
+
+    CONSTRAINT PK_TB_USER_V2_D1 PRIMARY KEY (HIST_ID),
+    CONSTRAINT FK_TB_USER_V2_D1
+        FOREIGN KEY (USER_ID) REFERENCES TB_USER_V2(USER_ID)
+);
+
+CREATE TABLE TB_USER_V2_D2 (
+    HIST_ID        INT              NOT NULL,
+    USER_ID        VARCHAR(100)     NOT NULL,
+    CHANGE_TYPE    VARCHAR(20)      NOT NULL,
+    CHANGE_DESC    VARCHAR(200),
+    CHANGE_DTTM    DATETIME2        DEFAULT SYSDATETIME(),
+    CREATED_BY     VARCHAR(50),
+
+    CONSTRAINT PK_TB_USER_V2_D2 PRIMARY KEY (HIST_ID),
+    CONSTRAINT FK_TB_USER_V2_D2
+        FOREIGN KEY (USER_ID) REFERENCES TB_USER_V2(USER_ID)
+);
+
+CREATE TABLE TB_USER_V2_D3 (
+    HIST_ID        INT              NOT NULL,
+    USER_ID        VARCHAR(100)     NOT NULL,
+    CHANGE_TYPE    VARCHAR(20)      NOT NULL,
+    CHANGE_DESC    VARCHAR(200),
+    CHANGE_DTTM    DATETIME2        DEFAULT SYSDATETIME(),
+    CREATED_BY     VARCHAR(50),
+
+    CONSTRAINT PK_TB_USER_V2_D3 PRIMARY KEY (HIST_ID),
+    CONSTRAINT FK_TB_USER_V2_D3
+        FOREIGN KEY (USER_ID) REFERENCES TB_USER_V2(USER_ID)
+);

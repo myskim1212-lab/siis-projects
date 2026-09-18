@@ -1,0 +1,34 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": null,
+                    "USER_NAME": null,
+                    "USER_NICK": "NICK_1",
+                    "USER_CODE": "CODE_NULL",
+                    "USER_DESC": "TC005 null value test - should fail due to NOT NULL constraint",
+                    "USER_AGE": 20,
+                    "USER_COUNT": 1000,
+                    "USER_BIGINT": 922337203685477580,
+                    "USER_SCORE": 88.1234,
+                    "USER_RATE": 0.12345678,
+                    "USER_RATIO": 1.2345,
+                    "USER_WEIGHT": 75.4321,
+                    "CREATED_DATE": "2026-01-01",
+                    "UPDATED_TS": "2026-01-01T00:00:00.000",
+                    "UPDATED_TZ": "2026-01-01T00:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-01-01T00:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "QklOQVJZXzE=",
+                    "META_JSON": "{\"key\":\"null_test\"}",
+                    "TAGS": "null_test",
+                    "USER_XML": "<user><id>null</id></user>",
+                    "OPTIONAL_COL": "TC005"
+                }
+            ]
+        }
+    }
+}

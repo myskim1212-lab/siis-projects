@@ -1,0 +1,9 @@
+{
+    "operations": {
+        "select_date_format_test": {
+            "data": [
+                { "USER_ID": "DATE_FMT_TEST_PG" }
+            ]
+        }
+    }
+}

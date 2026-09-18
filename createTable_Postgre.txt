@@ -1,0 +1,291 @@
+-- ====================================================================================================
+-- 기능테스트 메인 테이블 (PostgreSQL)
+-- ====================================================================================================
+
+CREATE TABLE TB_USER_V2 (
+    /* ===============================
+       1) 식별자 / 키 계열
+       =============================== */
+    USER_ID        VARCHAR(100)         NOT NULL,      -- PK
+    USER_SEQ       BIGSERIAL,                          -- GENERATED ALWAYS AS IDENTITY 대체
+
+    /* ===============================
+       2) 문자열 계열
+       =============================== */
+    USER_NAME      VARCHAR(100)         NOT NULL,
+    USER_NICK      CHAR(20),
+    USER_CODE      VARCHAR(50),                        -- NVARCHAR2 대체 (PG는 기본 UTF-8)
+    USER_DESC      TEXT,                               -- CLOB 대체
+
+    /* ===============================
+       3) 숫자 계열 (종합 테스트)
+       =============================== */
+    USER_AGE       SMALLINT,                           -- NUMBER(3) 대체
+    USER_COUNT     INTEGER,                            -- NUMBER(10) 대체
+    USER_BIGINT    BIGINT,                             -- NUMBER(19) 대체
+    USER_SCORE     NUMERIC(15,4),                      -- NUMBER(15,4) 대체
+    USER_RATE      DOUBLE PRECISION,                   -- FLOAT 대체
+    USER_RATIO     REAL,                               -- BINARY_FLOAT 대체
+    USER_WEIGHT    DOUBLE PRECISION,                   -- BINARY_DOUBLE 대체
+
+    /* ===============================
+       4) 날짜/시간 계열
+       =============================== */
+    CREATED_DATE   TIMESTAMP            DEFAULT NOW(),           -- DATE 대체
+    UPDATED_TS     TIMESTAMP,                                    -- TIMESTAMP 대체
+    UPDATED_TZ     TIMESTAMP WITH TIME ZONE,                     -- TIMESTAMP WITH TIME ZONE 유지
+    UPDATED_LTZ    TIMESTAMP WITH TIME ZONE,                     -- LOCAL TIME ZONE 대체 (PG는 세션 타임존 적용)
+
+    /* ===============================
+       5) BOOLEAN 대체 및 상태값
+       =============================== */
+    IS_ACTIVE      CHAR(1)              DEFAULT 'Y',    -- Y/N
+    IS_DELETED     CHAR(1)              DEFAULT 'N',
+
+    /* ===============================
+       6) 대용량 바이너리 계열
+       =============================== */
+    USER_PROFILE   BYTEA,                              -- BLOB 대체
+    -- USER_DOC  : BFILE 미지원 (외부파일 경로를 VARCHAR로 관리 권장)
+    USER_DOC_PATH  VARCHAR(500),                       -- BFILE 대체 (파일 경로 저장)
+
+    /* ===============================
+       7) 구조형/특수 타입
+       =============================== */
+    META_JSON      JSONB,                              -- CLOB CHECK IS JSON 대체 (JSONB 권장)
+    TAGS           VARCHAR(4000),                      -- CSV/ARRAY 대체
+    USER_XML       XML,                                -- XMLTYPE 대체
+
+    /* ===============================
+       8) NULL/옵션 테스트
+       =============================== */
+    OPTIONAL_COL   VARCHAR(100),
+
+    CONSTRAINT PK_TB_USER_V2 PRIMARY KEY (USER_ID)
+);
+
+CREATE INDEX IDX_USER_NAME ON TB_USER_V2(USER_NAME);
+CREATE INDEX IDX_USER_AGE  ON TB_USER_V2(USER_AGE);
+
+-- ====================================================================================================
+-- 프로시저 백업 테이블
+-- ====================================================================================================
+
+CREATE TABLE TB_USER_V2_BUSINESS AS
+    SELECT * FROM TB_USER_V2 WHERE 1=0;
+-- ※ BIGSERIAL 시퀀스는 복제되지 않음. BIGSERIAL 대신 BIGINT로 생성됨
+
+-- ====================================================================================================
+-- 프로시저 생성
+-- ====================================================================================================
+
+CREATE OR REPLACE PROCEDURE TB_USER_V2_PROC()
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_cnt INTEGER;
+BEGIN
+    INSERT INTO TB_USER_V2_BUSINESS
+    SELECT * FROM TB_USER_V2;
+
+    GET DIAGNOSTICS v_cnt = ROW_COUNT;
+
+    RAISE NOTICE '복사 완료. 건수 = %', v_cnt;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE '오류 발생: %', SQLERRM;
+        RAISE;
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE TB_USER_V2_PROC_PARAM(
+    p_user_id   IN VARCHAR,
+    p_user_name IN VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_cnt INTEGER;
+BEGIN
+    INSERT INTO TB_USER_V2_BUSINESS
+    SELECT *
+      FROM TB_USER_V2
+     WHERE USER_ID   = p_user_id
+       AND USER_NAME = p_user_name;
+
+    GET DIAGNOSTICS v_cnt = ROW_COUNT;
+
+    COMMIT;
+    RAISE NOTICE '복사 완료. 건수 = %', v_cnt;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE NOTICE '오류 발생: %', SQLERRM;
+        RAISE;
+END;
+$$;
+
+
+CREATE OR REPLACE PROCEDURE TB_USER_V2_PROC_PARAM_OUT(
+    IN  p_user_id    VARCHAR,
+    IN  p_user_name  VARCHAR,
+    OUT p_copy_cnt   INTEGER,
+    OUT p_result_msg VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO TB_USER_V2_BUSINESS
+    SELECT *
+      FROM TB_USER_V2
+     WHERE USER_ID   = p_user_id
+       AND USER_NAME = p_user_name;
+
+    GET DIAGNOSTICS p_copy_cnt = ROW_COUNT;
+    p_result_msg := '복사 완료. 건수 = ' || p_copy_cnt;
+
+    COMMIT;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        p_copy_cnt   := -1;
+        p_result_msg := '오류 발생: ' || SQLERRM;
+        RAISE;
+END;
+$$;
+-- ====================================================================================================
+-- 멀티테이블 처리 테스트를 위한 테이블 생성
+-- ====================================================================================================
+
+CREATE TABLE TB_USER_V2_M1 (
+    USER_ID        VARCHAR(100)         NOT NULL,
+    USER_SEQ       BIGSERIAL,
+    USER_NAME      VARCHAR(100)         NOT NULL,
+    USER_NICK      CHAR(20),
+    USER_CODE      VARCHAR(50),
+    USER_DESC      TEXT,
+    USER_AGE       SMALLINT,
+    USER_COUNT     INTEGER,
+    USER_BIGINT    BIGINT,
+    USER_SCORE     NUMERIC(15,4),
+    USER_RATE      DOUBLE PRECISION,
+    USER_RATIO     REAL,
+    USER_WEIGHT    DOUBLE PRECISION,
+    CREATED_DATE   TIMESTAMP            DEFAULT NOW(),
+    UPDATED_TS     TIMESTAMP,
+    UPDATED_TZ     TIMESTAMP WITH TIME ZONE,
+    UPDATED_LTZ    TIMESTAMP WITH TIME ZONE,
+    IS_ACTIVE      CHAR(1)              DEFAULT 'Y',
+    IS_DELETED     CHAR(1)              DEFAULT 'N',
+    USER_PROFILE   BYTEA,
+    USER_DOC_PATH  VARCHAR(500),
+    META_JSON      JSONB,
+    TAGS           VARCHAR(4000),
+    USER_XML       XML,
+    OPTIONAL_COL   VARCHAR(100),
+    CONSTRAINT PK_TB_USER_V2_M1 PRIMARY KEY (USER_ID)
+);
+
+CREATE TABLE TB_USER_V2_M2 (
+    USER_ID        VARCHAR(100)         NOT NULL,
+    USER_SEQ       BIGSERIAL,
+    USER_NAME      VARCHAR(100)         NOT NULL,
+    USER_NICK      CHAR(20),
+    USER_CODE      VARCHAR(50),
+    USER_DESC      TEXT,
+    USER_AGE       SMALLINT,
+    USER_COUNT     INTEGER,
+    USER_BIGINT    BIGINT,
+    USER_SCORE     NUMERIC(15,4),
+    USER_RATE      DOUBLE PRECISION,
+    USER_RATIO     REAL,
+    USER_WEIGHT    DOUBLE PRECISION,
+    CREATED_DATE   TIMESTAMP            DEFAULT NOW(),
+    UPDATED_TS     TIMESTAMP,
+    UPDATED_TZ     TIMESTAMP WITH TIME ZONE,
+    UPDATED_LTZ    TIMESTAMP WITH TIME ZONE,
+    IS_ACTIVE      CHAR(1)              DEFAULT 'Y',
+    IS_DELETED     CHAR(1)              DEFAULT 'N',
+    USER_PROFILE   BYTEA,
+    USER_DOC_PATH  VARCHAR(500),
+    META_JSON      JSONB,
+    TAGS           VARCHAR(4000),
+    USER_XML       XML,
+    OPTIONAL_COL   VARCHAR(100),
+    CONSTRAINT PK_TB_USER_V2_M2 PRIMARY KEY (USER_ID)
+);
+
+CREATE TABLE TB_USER_V2_M3 (
+    USER_ID        VARCHAR(100)         NOT NULL,
+    USER_SEQ       BIGSERIAL,
+    USER_NAME      VARCHAR(100)         NOT NULL,
+    USER_NICK      CHAR(20),
+    USER_CODE      VARCHAR(50),
+    USER_DESC      TEXT,
+    USER_AGE       SMALLINT,
+    USER_COUNT     INTEGER,
+    USER_BIGINT    BIGINT,
+    USER_SCORE     NUMERIC(15,4),
+    USER_RATE      DOUBLE PRECISION,
+    USER_RATIO     REAL,
+    USER_WEIGHT    DOUBLE PRECISION,
+    CREATED_DATE   TIMESTAMP            DEFAULT NOW(),
+    UPDATED_TS     TIMESTAMP,
+    UPDATED_TZ     TIMESTAMP WITH TIME ZONE,
+    UPDATED_LTZ    TIMESTAMP WITH TIME ZONE,
+    IS_ACTIVE      CHAR(1)              DEFAULT 'Y',
+    IS_DELETED     CHAR(1)              DEFAULT 'N',
+    USER_PROFILE   BYTEA,
+    USER_DOC_PATH  VARCHAR(500),
+    META_JSON      JSONB,
+    TAGS           VARCHAR(4000),
+    USER_XML       XML,
+    OPTIONAL_COL   VARCHAR(100),
+    CONSTRAINT PK_TB_USER_V2_M3 PRIMARY KEY (USER_ID)
+);
+
+-- ====================================================================================================
+-- 마스터 디테일 테스트를 위한 디테일 테이블 생성
+-- ====================================================================================================
+
+CREATE TABLE TB_USER_V2_D1 (
+    HIST_ID        INTEGER          NOT NULL,      -- 이력 PK (NUMBER(10) 대체)
+    USER_ID        VARCHAR(100)     NOT NULL,      -- 부모키(FK)
+    CHANGE_TYPE    VARCHAR(20)      NOT NULL,
+    CHANGE_DESC    VARCHAR(200),
+    CHANGE_DTTM    TIMESTAMP        DEFAULT NOW(), -- SYSTIMESTAMP 대체
+    CREATED_BY     VARCHAR(50),
+
+    CONSTRAINT PK_TB_USER_V2_D1 PRIMARY KEY (HIST_ID),
+    CONSTRAINT FK_TB_USER_V2_D1
+        FOREIGN KEY (USER_ID) REFERENCES TB_USER_V2(USER_ID)
+);
+
+CREATE TABLE TB_USER_V2_D2 (
+    HIST_ID        INTEGER          NOT NULL,
+    USER_ID        VARCHAR(100)     NOT NULL,
+    CHANGE_TYPE    VARCHAR(20)      NOT NULL,
+    CHANGE_DESC    VARCHAR(200),
+    CHANGE_DTTM    TIMESTAMP        DEFAULT NOW(),
+    CREATED_BY     VARCHAR(50),
+
+    CONSTRAINT PK_TB_USER_V2_D2 PRIMARY KEY (HIST_ID),
+    CONSTRAINT FK_TB_USER_V2_D2
+        FOREIGN KEY (USER_ID) REFERENCES TB_USER_V2(USER_ID)
+);
+
+CREATE TABLE TB_USER_V2_D3 (
+    HIST_ID        INTEGER          NOT NULL,
+    USER_ID        VARCHAR(100)     NOT NULL,
+    CHANGE_TYPE    VARCHAR(20)      NOT NULL,
+    CHANGE_DESC    VARCHAR(200),
+    CHANGE_DTTM    TIMESTAMP        DEFAULT NOW(),
+    CREATED_BY     VARCHAR(50),
+
+    CONSTRAINT PK_TB_USER_V2_D3 PRIMARY KEY (HIST_ID),
+    CONSTRAINT FK_TB_USER_V2_D3
+        FOREIGN KEY (USER_ID) REFERENCES TB_USER_V2(USER_ID)
+);

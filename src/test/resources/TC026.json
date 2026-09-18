@@ -1,0 +1,36 @@
+{
+  "operations": {
+    "delete_tb_user_v2": {
+      "data": null
+    },
+    "insert_tb_user_v2": {
+      "data": [
+        {
+          "USER_ID": "TC026_OVERFLOW_STRING_VALUE_THAT_EXCEEDS_COLUMN_MAX_LENGTH_LIMIT_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+          "USER_NAME": "컬럼길이초과_TC026",
+          "USER_NICK": "OVER",
+          "USER_CODE": "CODE_OVER",
+          "USER_DESC": "USER_ID 컬럼 길이 초과 테스트",
+          "USER_AGE": 30,
+          "USER_COUNT": 1,
+          "USER_BIGINT": 100,
+          "USER_SCORE": 50.0,
+          "USER_RATE": 0.5,
+          "USER_RATIO": 1.0,
+          "USER_WEIGHT": 60.0,
+          "CREATED_DATE": "2026-01-01",
+          "UPDATED_TS": "2026-01-01T00:00:00.000",
+          "UPDATED_TZ": "2026-01-01T00:00:00.000000+09:00",
+          "UPDATED_LTZ": "2026-01-01T00:00:00.000000+09:00",
+          "IS_ACTIVE": "Y",
+          "IS_DELETED": "N",
+          "USER_PROFILE": "QUFBQQ==",
+          "META_JSON": "{\"type\": \"column_overflow\"}",
+          "TAGS": "overflow,string",
+          "USER_XML": "<user><id>TC026</id></user>",
+          "OPTIONAL_COL": null
+        }
+      ]
+    }
+  }
+}
