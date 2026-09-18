@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><artifacts>
+    <artifact name="SIISManagementApi_v1" groupId="siis.management.api" version="v1" type="synapse/api" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/api/SIISManagementApi_v1.xml</file>
+    </artifact>
+    <artifact name="SIISManagementApi_v1_swagger" groupId="siis.management.metadata" version="v1" type="synapse/metadata" serverRole="EnterpriseServiceBus">
+        <file>src/main/resources/metadata/SIISManagementApi_v1_swagger.yaml</file>
+    </artifact>
+    <artifact name="SIISManagementApi_v1_metadata" groupId="siis.management.metadata" version="v1" type="synapse/metadata" serverRole="EnterpriseServiceBus">
+        <file>src/main/resources/metadata/SIISManagementApi_v1_metadata.yaml</file>
+    </artifact>
+</artifacts>
