@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backend Emulator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #24292e;
+      background: #f6f8fa;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 40px auto;
+      background: #fff;
+      border: 1px solid #d1d5da;
+      border-radius: 8px;
+      padding: 48px;
+    }
+
+    h1 {
+      font-size: 2em;
+      border-bottom: 2px solid #0366d6;
+      padding-bottom: 10px;
+      margin-bottom: 8px;
+      color: #0366d6;
+    }
+
+    h2 {
+      font-size: 1.4em;
+      border-bottom: 1px solid #e1e4e8;
+      padding-bottom: 6px;
+      margin: 36px 0 14px;
+      color: #24292e;
+    }
+
+    h3 {
+      font-size: 1.1em;
+      margin: 24px 0 10px;
+      color: #444d56;
+    }
+
+    p { margin: 8px 0; }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e1e4e8;
+      margin: 28px 0;
+    }
+
+    /* 테이블 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f1f8ff;
+      border: 1px solid #c8e1ff;
+      padding: 8px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #0366d6;
+    }
+
+    td {
+      border: 1px solid #e1e4e8;
+      padding: 8px 12px;
+    }
+
+    tr:nth-child(even) td { background: #f6f8fa; }
+
+    /* 코드 */
+    code {
+      background: #f1f8ff;
+      border: 1px solid #c8e1ff;
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 13px;
+      color: #d73a49;
+    }
+
+    pre {
+      background: #1e1e1e;
+      border-radius: 6px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      margin: 12px 0;
+      border-left: 4px solid #0366d6;
+    }
+
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: #d4d4d4;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* 하이라이트 키워드 */
+    pre code .kw  { color: #569cd6; }  /* keyword */
+    pre code .cm  { color: #6a9955; }  /* comment */
+    pre code .st  { color: #ce9178; }  /* string */
+    pre code .nm  { color: #4fc1ff; }  /* number */
+
+    /* 인용 */
+    blockquote {
+      border-left: 4px solid #0366d6;
+      background: #f1f8ff;
+      padding: 10px 16px;
+      margin: 14px 0;
+      border-radius: 0 4px 4px 0;
+      color: #586069;
+    }
+
+    /* 배지 */
+    .badge {
+      display: inline-block;
+      background: #0366d6;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-right: 4px;
+    }
+
+    .badge.green  { background: #28a745; }
+    .badge.red    { background: #cb2431; }
+    .badge.orange { background: #e36209; }
+    .badge.gray   { background: #586069; }
+
+    /* 모드 카드 */
+    .mode-card {
+      border: 1px solid #e1e4e8;
+      border-radius: 6px;
+      margin: 16px 0;
+      overflow: hidden;
+    }
+
+    .mode-card-header {
+      background: #f1f8ff;
+      border-bottom: 1px solid #c8e1ff;
+      padding: 10px 16px;
+      font-weight: 600;
+      color: #0366d6;
+      font-size: 15px;
+    }
+
+    .mode-card-body { padding: 16px; }
+
+    /* 필수 표시 */
+    .required { color: #cb2431; font-weight: 700; }
+    .optional { color: #586069; }
+
+    /* 변경이력 */
+    .changelog td:first-child { font-weight: 600; color: #0366d6; white-space: nowrap; }
+
+    /* 반응형 */
+    @media (max-width: 720px) {
+      .container { margin: 0; border-radius: 0; padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>⚙ Backend Emulator</h1>
+  <p>WSO2 API Gateway 테스트용 백엔드 에뮬레이터.<br>
+  클라이언트가 보낸 요청을 수신하고, 설정에 따라 응답 코드 / 헤더 / 바디 / 스트리밍 / 오류율을 제어할 수 있다.</p>
+
+  <hr>
+
+  <!-- 요구사항 -->
+  <h2>요구사항</h2>
+  <table>
+    <tr><th>항목</th><th>버전</th></tr>
+    <tr><td>Java</td><td>1.8 이상</td></tr>
+    <tr><td>Maven</td><td>3.6 이상</td></tr>
+    <tr><td>Spring Boot</td><td>2.7.18</td></tr>
+  </table>
+
+  <hr>
+
+  <!-- 프로젝트 구조 -->
+  <h2>프로젝트 구조</h2>
+  <pre><code>backend-emulator/
+├── pom.xml
+└── src/main/
+    ├── java/ipaas/backend/emulator/
+    │   ├── BackendEmulatorApplication.java      # 메인 클래스
+    │   ├── StartupLogger.java                   # 시작 시 URL/샘플 출력
+    │   ├── controller/
+    │   │   ├── EmulatorController.java          # /backend/emulator 엔드포인트
+    │   │   └── HistoryController.java           # /history 엔드포인트
+    │   ├── service/
+    │   │   ├── EmulatorService.java             # 핵심 로직
+    │   │   └── RequestHistoryService.java       # 요청 히스토리 관리
+    │   └── model/
+    │       ├── EmulatorRequest.java             # 제어 요청 모델
+    │       └── RequestLog.java                  # 히스토리 모델
+    └── resources/
+        └── application.properties               # 서버 설정 (포트: 8888)</code></pre>
+
+  <hr>
+
+  <!-- 빌드 -->
+  <h2>빌드</h2>
+
+  <h3>컴파일만 (JAR 미생성)</h3>
+  <pre><code>mvn compile</code></pre>
+
+  <h3>JAR 빌드</h3>
+  <pre><code>mvn clean package -DskipTests</code></pre>
+  <p>빌드 완료 후 생성 위치:</p>
+  <pre><code>target/backend-emulator-1.0.0.jar</code></pre>
+
+  <hr>
+
+  <!-- 실행 -->
+  <h2>실행</h2>
+
+  <h3>방법 1 — Maven으로 직접 실행 (개발용)</h3>
+  <pre><code>mvn spring-boot:run</code></pre>
+
+  <h3>방법 2 — JAR 실행 (Windows)</h3>
+  <pre><code>java -jar target/backend-emulator-1.0.0.jar</code></pre>
+
+  <h3>방법 3 — JAR 실행 (Linux 백그라운드)</h3>
+  <pre><code>nohup java -jar backend-emulator-1.0.0.jar \
+  > emulator.log 2>&1 &
+
+echo $! > emulator.pid</code></pre>
+
+  <p><strong>로그 확인:</strong></p>
+  <pre><code>tail -f emulator.log</code></pre>
+  <p><strong>종료:</strong></p>
+  <pre><code>kill $(cat emulator.pid)</code></pre>
+
+  <h3>포트 변경 방법</h3>
+  <table>
+    <tr><th>방법</th><th>명령 / 설정</th></tr>
+    <tr><td>실행 옵션</td><td><code>java -jar backend-emulator-1.0.0.jar --server.port=9999</code></td></tr>
+    <tr><td>application.properties</td><td><code>server.port=9999</code></td></tr>
+    <tr><td>환경변수 (Linux)</td><td><code>export SERVER_PORT=9999</code></td></tr>
+  </table>
+
+  <hr>
+
+  <!-- 엔드포인트 -->
+  <h2>엔드포인트</h2>
+  <table>
+    <tr><th>Method</th><th>URL</th><th>설명</th></tr>
+    <tr>
+      <td><span class="badge gray">*</span></td>
+      <td><code>http://localhost:8888/backend/emulator</code></td>
+      <td>에뮬레이터 메인</td>
+    </tr>
+    <tr>
+      <td><span class="badge green">GET</span></td>
+      <td><code>http://localhost:8888/history</code></td>
+      <td>요청 히스토리 전체 조회</td>
+    </tr>
+    <tr>
+      <td><span class="badge green">GET</span></td>
+      <td><code>http://localhost:8888/history?limit=10</code></td>
+      <td>최근 N건 조회</td>
+    </tr>
+    <tr>
+      <td><span class="badge red">DELETE</span></td>
+      <td><code>http://localhost:8888/history</code></td>
+      <td>히스토리 초기화</td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <!-- 제어 JSON 필드 -->
+  <h2>제어 JSON 필드</h2>
+  <table>
+    <tr><th>필드</th><th>타입</th><th>필수</th><th>설명</th></tr>
+    <tr><td><code>response_code</code></td><td>Integer</td><td class="optional">N</td><td>HTTP 응답 코드 (기본값: 200)</td></tr>
+    <tr><td><code>response_header</code></td><td>String</td><td class="optional">N</td><td>응답 헤더 — <code>KEY=VALUE,KEY=VALUE</code> 형식</td></tr>
+    <tr><td><code>response_content_type</code></td><td>String</td><td class="optional">N</td><td>응답 Content-Type</td></tr>
+    <tr><td><code>response_body</code></td><td>String</td><td class="required">Y</td><td>응답 바디</td></tr>
+    <tr><td><code>stream</code></td><td>Boolean</td><td class="optional">N</td><td>스트리밍 여부 (기본값: false)</td></tr>
+    <tr><td><code>chunk_size</code></td><td>Integer</td><td class="optional">N</td><td>스트리밍 시 1회 전송 바이트 수</td></tr>
+    <tr><td><code>delay_time</code></td><td>Integer</td><td class="optional">N</td><td>응답 지연 시간 ms — stream=false 시에도 적용</td></tr>
+    <tr><td><code>error_rate</code></td><td>Integer</td><td class="optional">N</td><td>오류 발생 확률 0~100 (%)</td></tr>
+  </table>
+
+  <hr>
+
+  <!-- 사용 방법 -->
+  <h2>사용 방법</h2>
+
+  <!-- 모드 1 -->
+  <div class="mode-card">
+    <div class="mode-card-header">모드 1 — Echo 모드</div>
+    <div class="mode-card-body">
+      <p>제어 JSON 구조가 아닌 임의의 요청을 보내면 수신한 헤더와 바디를 그대로 응답한다.</p>
+      <pre><code>curl -X POST http://localhost:8888/backend/emulator \
+  -H "Content-Type: application/json" \
+  -H "X-Custom-Header: hello" \
+  -d '{"name":"test","value":123}'</code></pre>
+    </div>
+  </div>
+
+  <!-- 모드 2 -->
+  <div class="mode-card">
+    <div class="mode-card-header">모드 2 — 제어 모드 (즉시 응답)</div>
+    <div class="mode-card-body">
+      <p>응답 코드, 헤더, Content-Type, 바디를 직접 지정한다.</p>
+      <pre><code>curl -X POST http://localhost:8888/backend/emulator \
+  -H "Content-Type: application/json" \
+  -d '{
+    "response_code"        : 201,
+    "response_header"      : "RECORD_COUNT=100,RECORD_SIZE=200",
+    "response_content_type": "application/json",
+    "response_body"        : "{\"result\":\"ok\"}",
+    "delay_time"           : 1000
+  }'</code></pre>
+      <p><strong>응답 헤더:</strong></p>
+      <pre><code>HTTP/1.1 201
+Content-Type: application/json
+RECORD_COUNT: 100
+RECORD_SIZE: 200</code></pre>
+      <p><strong>응답 바디:</strong></p>
+      <pre><code>{"result":"ok"}</code></pre>
+    </div>
+  </div>
+
+  <!-- 모드 3 -->
+  <div class="mode-card">
+    <div class="mode-card-header">모드 3 — 스트리밍 모드</div>
+    <div class="mode-card-body">
+      <p><code>stream: true</code> 로 설정하면 <code>response_body</code> 를 <code>chunk_size</code> 바이트 단위로
+      <code>delay_time</code> ms 간격으로 나누어 스트리밍 응답한다.</p>
+      <pre><code>curl -X POST http://localhost:8888/backend/emulator --no-buffer \
+  -H "Content-Type: application/json" \
+  -d '{
+    "response_header": "RECORD_COUNT=100,RECORD_SIZE=200",
+    "response_body"  : "aaaabbbccc",
+    "stream"         : true,
+    "chunk_size"     : 3,
+    "delay_time"     : 1000
+  }'</code></pre>
+      <p><strong>동작:</strong></p>
+      <pre><code>청크 1 → "aaa"  (즉시)
+청크 2 → "bbb"  (1000ms 후)
+청크 3 → "ccc"  (1000ms 후)
+청크 4 → "c"    (1000ms 후)</code></pre>
+      <blockquote>Postman은 응답이 완료된 후 한번에 표시됨. curl --no-buffer 사용 권장.</blockquote>
+    </div>
+  </div>
+
+  <!-- 모드 4 -->
+  <div class="mode-card">
+    <div class="mode-card-header">모드 4 — 오류 시뮬레이션</div>
+    <div class="mode-card-body">
+      <p><code>error_rate</code> 설정 시 해당 확률(%)로 HTTP 500을 응답한다.</p>
+      <pre><code>curl -X POST http://localhost:8888/backend/emulator \
+  -H "Content-Type: application/json" \
+  -d '{
+    "response_body": "ok",
+    "error_rate"   : 30
+  }'</code></pre>
+      <ul style="margin: 10px 0 0 20px;">
+        <li>30% 확률 → HTTP 500 + <code>{"error":"Simulated error (error_rate=30%)"}</code></li>
+        <li>70% 확률 → HTTP 200 + <code>ok</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 히스토리 -->
+  <div class="mode-card">
+    <div class="mode-card-header">히스토리 API</div>
+    <div class="mode-card-body">
+      <p>최근 수신한 요청/응답 내역을 조회한다. 최대 100건 인메모리 보관.</p>
+      <pre><code># 전체 조회
+curl http://localhost:8888/history
+
+# 최근 10건 조회
+curl http://localhost:8888/history?limit=10
+
+# 초기화
+curl -X DELETE http://localhost:8888/history</code></pre>
+      <p><strong>응답 예시:</strong></p>
+      <pre><code>[
+  {
+    "no": 1,
+    "timestamp": "2026-05-20 10:30:00.123",
+    "method": "POST",
+    "uri": "/backend/emulator",
+    "requestHeaders": {"content-type": "application/json"},
+    "requestBody": "{\"response_body\":\"hello\"}",
+    "responseCode": 200,
+    "mode": "CONTROLLED",
+    "responseBody": "hello"
+  }
+]</code></pre>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- 실행 로그 예시 -->
+  <h2>실행 로그 예시</h2>
+
+  <h3>제어 모드</h3>
+  <pre><code>======================================================================
+ [REQUEST #1]
+======================================================================
+  Time            : 2026-05-20 10:30:00.123
+  Method          : POST
+  URI             : /backend/emulator
+  -- Headers --
+  content-type                  : application/json
+  -- Body --
+  {"response_code":201,"response_body":"hello","delay_time":1000}
+======================================================================
+
+----------------------------------------------------------------------
+ [RESPONSE #1]
+----------------------------------------------------------------------
+  Status          : 201
+  Mode            : CONTROLLED (delay_time=1000ms)
+  -- Headers --
+  -- Body --
+  hello
+----------------------------------------------------------------------</code></pre>
+
+  <h3>스트리밍 모드</h3>
+  <pre><code>======================================================================
+ [REQUEST #2]
+======================================================================
+  -- Body --
+  {"response_body":"aaaabbbccc","stream":true,"chunk_size":3,"delay_time":1000}
+======================================================================
+
+----------------------------------------------------------------------
+ [RESPONSE #2]
+----------------------------------------------------------------------
+  Status          : 200
+  Mode            : STREAM (chunk_size=3, delay_time=1000ms)
+  -- Body --
+  aaaabbbccc
+----------------------------------------------------------------------
+[STREAM #2] chunk sent (0 ~ 2 bytes)
+[STREAM #2] chunk sent (3 ~ 5 bytes)
+[STREAM #2] chunk sent (6 ~ 8 bytes)
+[STREAM #2] chunk sent (9 ~ 9 bytes)</code></pre>
+
+  <hr>
+
+  <!-- Linux 배포 -->
+  <h2>Linux 배포</h2>
+  <pre><code># 1. Windows에서 JAR 빌드
+mvn clean package -DskipTests
+
+# 2. Linux 서버로 전송
+scp target/backend-emulator-1.0.0.jar user@server_ip:/app/backend-emulator/
+
+# 3. Linux에서 실행
+nohup java -jar /app/backend-emulator/backend-emulator-1.0.0.jar \
+  > /app/backend-emulator/emulator.log 2>&1 &
+
+echo $! > /app/backend-emulator/emulator.pid</code></pre>
+
+  <p><strong>Linux에 JDK가 없는 경우:</strong></p>
+  <pre><code># Amazon Linux / CentOS / RHEL
+yum install -y java-1.8.0-openjdk
+
+# Ubuntu / Debian
+apt-get install -y openjdk-8-jdk</code></pre>
+
+  <hr>
+
+  <!-- 변경 이력 -->
+  <h2>주요 변경 이력</h2>
+  <table class="changelog">
+    <tr><th>버전</th><th>내용</th></tr>
+    <tr><td>1.0.0</td><td>최초 릴리즈 (Java 1.8, Spring Boot 2.7.18)</td></tr>
+    <tr><td>1.1.0</td><td>response_code, delay_time(non-stream), error_rate, response_content_type, 히스토리 API 추가</td></tr>
+  </table>
+
+</div>
+</body>
+</html>
