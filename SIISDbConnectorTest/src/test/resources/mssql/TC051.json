@@ -1,0 +1,34 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": "ML_99",
+                    "USER_NAME": "\u0645\u062D\u0645\u062F_99\u060C \u0623\u062D\u0645\u062F",
+                    "USER_NICK": "AR_99",
+                    "USER_CODE": "ML_CODE_99",
+                    "USER_DESC": "Multilingual Round-Trip:\nArabic: \u0645\u0631\u062D\u0628\u0627\nChinese: \u4E2D\u6587\nKorean: \uD55C\uAD6D\uC5B4\nData: 99",
+                    "USER_AGE": 35,
+                    "USER_COUNT": 1099,
+                    "USER_BIGINT": 922337203685477580,
+                    "USER_SCORE": 88.1234,
+                    "USER_RATE": 0.12345678,
+                    "USER_RATIO": 1.2345,
+                    "USER_WEIGHT": 75.4321,
+                    "CREATED_DATE": "2026-01-01",
+                    "UPDATED_TS": "2026-01-01T00:00:00.000",
+                    "UPDATED_TZ": "2026-01-01T00:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-01-01T00:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "bWxfOTk=",
+                    "META_JSON": "{\"roundtrip\":true,\"id\":99}",
+                    "TAGS": "multilingual,roundtrip",
+                    "USER_XML": "<user><id>ML_99</id><type>multilingual</type></user>",
+                    "OPTIONAL_COL": "TC053"
+                }
+            ]
+        }
+    }
+}

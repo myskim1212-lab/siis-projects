@@ -1,0 +1,37 @@
+{
+    "operations": {
+        "delete_date_format_test": {
+            "data": [
+                { "USER_ID": "DATE_FMT_TEST_ORA" }
+            ]
+        },
+        "insert_date_format_test": {
+            "data": [
+                {
+                    "USER_ID":      "DATE_FMT_TEST_ORA",
+                    "USER_NAME":    "날짜포맷테스터",
+                    "USER_NICK":    "FMT_NICK",
+                    "USER_CODE":    "FMT_CODE_ORA",
+                    "USER_DESC":    "Oracle TO_CHAR date format bug fix test",
+                    "USER_AGE":     30,
+                    "USER_COUNT":   1,
+                    "USER_BIGINT":  1000000,
+                    "USER_SCORE":   99.99,
+                    "USER_RATE":    0.5,
+                    "USER_RATIO":   1.0,
+                    "USER_WEIGHT":  60.0,
+                    "CREATED_DATE": "2026-01-01",
+                    "UPDATED_TS":   "2026-01-01T12:30:45.000",
+                    "UPDATED_TZ":   "2026-01-01T12:30:45.000+09:00",
+                    "UPDATED_LTZ":  "2026-01-01T12:30:45.000+09:00",
+                    "IS_ACTIVE":    "Y",
+                    "IS_DELETED":   "N",
+                    "USER_PROFILE": "AAAA",
+                    "META_JSON":    "{\"test\": \"oracle_date_fmt\"}",
+                    "TAGS":         "oracle,date,format",
+                    "USER_XML":     "<test><type>oracle_date_fmt</type></test>"
+                }
+            ]
+        }
+    }
+}

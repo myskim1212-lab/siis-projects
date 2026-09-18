@@ -1,0 +1,36 @@
+{
+  "operations": {
+    "delete_tb_user_v2": {
+      "data": null
+    },
+    "insert_tb_user_v2": {
+      "data": [
+        {
+          "USER_ID": "TC027_SQLI_001",
+          "USER_NAME": "'; DROP TABLE tb_user_v2; --",
+          "USER_NICK": "' OR '1'='1",
+          "USER_CODE": "1; SELECT * FROM tb_user_v2 WHERE '1'='1",
+          "USER_DESC": "SQL Injection 패턴 테스트:\n1) DROP TABLE\n2) OR 1=1\n3) UNION SELECT\n4) -- 주석처리\n5) xp_cmdshell",
+          "USER_AGE": 0,
+          "USER_COUNT": 0,
+          "USER_BIGINT": 0,
+          "USER_SCORE": 0.0,
+          "USER_RATE": 0.0,
+          "USER_RATIO": 0.0,
+          "USER_WEIGHT": 0.0,
+          "CREATED_DATE": "2026-01-01",
+          "UPDATED_TS": "2026-01-01T00:00:00.000",
+          "UPDATED_TZ": "2026-01-01T00:00:00.000000+09:00",
+          "UPDATED_LTZ": "2026-01-01T00:00:00.000000+09:00",
+          "IS_ACTIVE": "' OR 'Y'='Y",
+          "IS_DELETED": "' UNION SELECT null--",
+          "USER_PROFILE": "QUFBQQ==",
+          "META_JSON": "{\"injection\": \"'; DROP TABLE users; --\", \"comment\": \"-- bypass\"}",
+          "TAGS": "sql,injection,'; DROP TABLE--",
+          "USER_XML": "<user><id>TC027</id><script>alert('xss')</script></user>",
+          "OPTIONAL_COL": null
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+# operation_name 필드 의도적 누락 (검증 테스트용)
+api_name: test_missing_op_name
+target_system_key: TEST_ORACLE
+target_jndi_name: jdbc/TEST
+
+operations:
+  - action_type: SELECT
+    sql: SELECT 1 FROM DUAL
+    fields: []

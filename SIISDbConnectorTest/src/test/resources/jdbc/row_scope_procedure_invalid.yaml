@@ -1,0 +1,15 @@
+# PROCEDURE 에 commit_scope: ROW 설정 → INSERT/UPSERT/UPDATE/DELETE만 허용하므로 검증 에러 발생해야 함
+api_name: test_row_scope_procedure_invalid
+target_system_key: TEST
+target_jndi_name: jdbc/TEST
+operations:
+  - operation_name: proc_op
+    action_type: PROCEDURE
+    data_record: data
+    commit_scope: ROW
+    commit_action: COMMIT
+    sql: |
+      {CALL SP_TEST(:USER_ID, :OUT_CODE)}
+    fields:
+      - { data_field: USER_ID,  param: USER_ID,  type: STRING, direction: IN }
+      - { data_field: OUT_CODE, param: OUT_CODE, type: STRING, direction: OUT }

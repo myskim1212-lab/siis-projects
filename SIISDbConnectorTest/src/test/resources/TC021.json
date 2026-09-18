@@ -1,0 +1,61 @@
+{
+  "operations": {
+    "delete_tb_user_v2": {
+      "data": null
+    },
+    "insert_tb_user_v2": {
+      "data": [
+        {
+          "USER_ID": "DUPKEY_001",
+          "USER_NAME": "중복키테스터",
+          "USER_NICK": "NICK_DUP",
+          "USER_CODE": "CODE_DUP",
+          "USER_DESC": "중복키 테스트용 첫번째 레코드",
+          "USER_AGE": 30,
+          "USER_COUNT": 1,
+          "USER_BIGINT": 100,
+          "USER_SCORE": 50.0,
+          "USER_RATE": 0.5,
+          "USER_RATIO": 1.0,
+          "USER_WEIGHT": 60.0,
+          "CREATED_DATE": "2026-01-01",
+          "UPDATED_TS": "2026-01-01T00:00:00.000",
+          "UPDATED_TZ": "2026-01-01T00:00:00.000000+09:00",
+          "UPDATED_LTZ": "2026-01-01T00:00:00.000000+09:00",
+          "IS_ACTIVE": "Y",
+          "IS_DELETED": "N",
+          "USER_PROFILE": "QUFBQQ==",
+          "META_JSON": "{\"desc\": \"dup key test\", \"val\": 1}",
+          "TAGS": "dup,test",
+          "USER_XML": "<user><id>DUPKEY_001</id></user>",
+          "OPTIONAL_COL": null
+        },
+        {
+          "USER_ID": "DUPKEY_001",
+          "USER_NAME": "중복키테스터2",
+          "USER_NICK": "NICK_DUP2",
+          "USER_CODE": "CODE_DUP2",
+          "USER_DESC": "중복키 테스트용 두번째 레코드 - 동일한 USER_ID",
+          "USER_AGE": 31,
+          "USER_COUNT": 2,
+          "USER_BIGINT": 200,
+          "USER_SCORE": 55.0,
+          "USER_RATE": 0.6,
+          "USER_RATIO": 1.1,
+          "USER_WEIGHT": 65.0,
+          "CREATED_DATE": "2026-01-02",
+          "UPDATED_TS": "2026-01-02T00:00:00.000",
+          "UPDATED_TZ": "2026-01-02T00:00:00.000000+09:00",
+          "UPDATED_LTZ": "2026-01-02T00:00:00.000000+09:00",
+          "IS_ACTIVE": "Y",
+          "IS_DELETED": "N",
+          "USER_PROFILE": "QUJDRA==",
+          "META_JSON": "{\"desc\": \"dup key test2\", \"val\": 2}",
+          "TAGS": "dup,test2",
+          "USER_XML": "<user><id>DUPKEY_001</id></user>",
+          "OPTIONAL_COL": null
+        }
+      ]
+    }
+  }
+}

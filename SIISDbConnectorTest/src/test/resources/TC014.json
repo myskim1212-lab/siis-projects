@@ -1,0 +1,34 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": "ID_1",
+                    "USER_NAME": "\u4E2D\u6587_\uD55C\uAD6D\uC5B4_\u65E5\u672C\u8A9E_1",
+                    "USER_NICK": "\uAC00\uB098\uB2E4_1",
+                    "USER_CODE": "\uD83C\uDF0D\uD83C\uDF1F_1",
+                    "USER_DESC": "TC014 Response Structure Test:\nUnicode: \u4E2D\u6587 \uD55C\uAD6D\uC5B4\nEmoji: \uD83D\uDE00\uD83D\uDE01",
+                    "USER_AGE": 20,
+                    "USER_COUNT": 1000,
+                    "USER_BIGINT": 922337203685477580,
+                    "USER_SCORE": 88.1234,
+                    "USER_RATE": 0.12345678,
+                    "USER_RATIO": 1.2345,
+                    "USER_WEIGHT": 75.4321,
+                    "CREATED_DATE": "2026-01-01",
+                    "UPDATED_TS": "2026-01-01T00:00:00.000",
+                    "UPDATED_TZ": "2026-01-01T00:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-01-01T00:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "dW5pY29kZQ==",
+                    "META_JSON": "{\"test\":\"response_structure\"}",
+                    "TAGS": "unicode,structure",
+                    "USER_XML": "<user><id>1</id></user>",
+                    "OPTIONAL_COL": "TC014"
+                }
+            ]
+        }
+    }
+}

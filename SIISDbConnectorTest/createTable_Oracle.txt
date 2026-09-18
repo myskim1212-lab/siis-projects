@@ -1,0 +1,383 @@
+====================================================================================================
+= 기능테스트 메인 테이블
+====================================================================================================
+
+CREATE TABLE TB_USER_V2 (
+    /* ===============================
+       1) 식별자 / 키 계열
+       =============================== */
+    USER_ID        VARCHAR2(100)        NOT NULL,      -- PK
+    USER_SEQ       NUMBER(19)           GENERATED ALWAYS AS IDENTITY,
+
+    /* ===============================
+       2) 문자열 계열
+       =============================== */
+    USER_NAME      VARCHAR2(100)        NOT NULL,
+    USER_NICK      CHAR(20),
+    USER_CODE      NVARCHAR2(50),                      -- 다국어 테스트
+    USER_DESC      CLOB,                               -- 대용량 텍스트
+
+    /* ===============================
+       3) 숫자 계열 (종합 테스트)
+       =============================== */
+    USER_AGE       NUMBER(3),                          -- 정수 소형
+    USER_COUNT     NUMBER(10),                         -- 중형 정수
+    USER_BIGINT    NUMBER(19),                         -- BIGINT 대체
+    USER_SCORE     NUMBER(15,4),                       -- DECIMAL
+    USER_RATE      FLOAT,                              -- 부동소수
+    USER_RATIO     BINARY_FLOAT,
+    USER_WEIGHT    BINARY_DOUBLE,
+
+    /* ===============================
+       4) 날짜/시간 계열 (전부 다)
+       =============================== */
+    CREATED_DATE   DATE               DEFAULT SYSDATE,
+    UPDATED_TS     TIMESTAMP,
+    UPDATED_TZ     TIMESTAMP WITH TIME ZONE,
+    UPDATED_LTZ    TIMESTAMP WITH LOCAL TIME ZONE,
+
+    /* ===============================
+       5) BOOLEAN 대체 및 상태값
+       =============================== */
+    IS_ACTIVE      CHAR(1)            DEFAULT 'Y',     -- Y/N
+    IS_DELETED     CHAR(1)            DEFAULT 'N',
+
+    /* ===============================
+       6) 대용량 바이너리 계열
+       =============================== */
+    USER_PROFILE   BLOB,
+    USER_DOC       BFILE,                              -- 외부 파일 참조
+
+    /* ===============================
+       7) 구조형/특수 타입 (선택)
+       =============================== */
+    META_JSON      CLOB CHECK (META_JSON IS JSON),    -- JSON 테스트
+    TAGS           VARCHAR2(4000),                     -- CSV/ARRAY 대체
+    USER_XML       XMLTYPE,                            -- XML 테스트
+
+    /* ===============================
+       8) NULL/옵션 테스트
+       =============================== */
+    OPTIONAL_COL   VARCHAR2(100),
+
+    CONSTRAINT PK_TB_USER_V2 PRIMARY KEY (USER_ID)
+);
+
+CREATE INDEX IDX_USER_NAME ON TB_USER_V2(USER_NAME);
+CREATE INDEX IDX_USER_AGE ON TB_USER_V2(USER_AGE);
+
+====================================================================================================
+= 프로시저 백업 테이블
+====================================================================================================
+
+CREATE TABLE TB_USER_V2_BUSINESS AS
+SELECT * FROM TB_USER_V2 WHERE 1=0;
+
+====================================================================================================
+= 프로시저 생성
+====================================================================================================
+
+CREATE OR REPLACE PROCEDURE TB_USER_V2_PROC
+IS
+    v_cnt NUMBER;
+BEGIN
+
+    INSERT INTO TB_USER_V2_BUSINESS
+    SELECT *
+      FROM TB_USER_V2;
+
+    v_cnt := SQL%ROWCOUNT;
+
+    COMMIT;
+
+    DBMS_OUTPUT.PUT_LINE('복사 완료. 건수 = ' || v_cnt);
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('오류 발생: ' || SQLERRM);
+        RAISE;
+END;
+
+
+CREATE OR REPLACE PROCEDURE TB_USER_V2_PROC_PARAM(
+    p_user_id   IN TB_USER_V2.USER_ID%TYPE,
+    p_user_name IN TB_USER_V2.USER_NAME%TYPE
+)
+IS
+    v_cnt NUMBER;
+BEGIN
+    INSERT INTO TB_USER_V2_BUSINESS
+    SELECT *
+      FROM TB_USER_V2
+     WHERE USER_ID   = p_user_id
+       AND USER_NAME = p_user_name;
+       
+    v_cnt := SQL%ROWCOUNT;
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('복사 완료. 건수 = ' || v_cnt);
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('오류 발생: ' || SQLERRM);
+        RAISE;
+END;
+
+
+
+CREATE OR REPLACE PROCEDURE TB_USER_V2_PROC_PARAM_OUT(
+    p_user_id    IN  TB_USER_V2.USER_ID%TYPE,
+    p_user_name  IN  TB_USER_V2.USER_NAME%TYPE,
+    p_copy_cnt   OUT NUMBER,
+    p_result_msg OUT VARCHAR2
+)
+IS
+BEGIN
+    INSERT INTO TB_USER_V2_BUSINESS
+    SELECT *
+      FROM TB_USER_V2
+     WHERE USER_ID   = p_user_id
+       AND USER_NAME = p_user_name;
+
+    p_copy_cnt   := SQL%ROWCOUNT;
+    p_result_msg := '복사 완료. 건수 = ' || p_copy_cnt;
+
+    COMMIT;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        p_copy_cnt   := -1;
+        p_result_msg := '오류 발생: ' || SQLERRM;
+        RAISE;
+END;
+/
+====================================================================================================
+= 멀티테이블 처리 테스트를 위한 테이블 생성
+====================================================================================================
+
+CREATE TABLE TB_USER_V2_M1 (
+    /* ===============================
+       1) 식별자 / 키 계열
+       =============================== */
+    USER_ID        VARCHAR2(100)        NOT NULL,      -- PK
+    USER_SEQ       NUMBER(19)           GENERATED ALWAYS AS IDENTITY,
+
+    /* ===============================
+       2) 문자열 계열
+       =============================== */
+    USER_NAME      VARCHAR2(100)        NOT NULL,
+    USER_NICK      CHAR(20),
+    USER_CODE      NVARCHAR2(50),                      -- 다국어 테스트
+    USER_DESC      CLOB,                               -- 대용량 텍스트
+
+    /* ===============================
+       3) 숫자 계열 (종합 테스트)
+       =============================== */
+    USER_AGE       NUMBER(3),                          -- 정수 소형
+    USER_COUNT     NUMBER(10),                         -- 중형 정수
+    USER_BIGINT    NUMBER(19),                         -- BIGINT 대체
+    USER_SCORE     NUMBER(15,4),                       -- DECIMAL
+    USER_RATE      FLOAT,                              -- 부동소수
+    USER_RATIO     BINARY_FLOAT,
+    USER_WEIGHT    BINARY_DOUBLE,
+
+    /* ===============================
+       4) 날짜/시간 계열 (전부 다)
+       =============================== */
+    CREATED_DATE   DATE               DEFAULT SYSDATE,
+    UPDATED_TS     TIMESTAMP,
+    UPDATED_TZ     TIMESTAMP WITH TIME ZONE,
+    UPDATED_LTZ    TIMESTAMP WITH LOCAL TIME ZONE,
+
+    /* ===============================
+       5) BOOLEAN 대체 및 상태값
+       =============================== */
+    IS_ACTIVE      CHAR(1)            DEFAULT 'Y',     -- Y/N
+    IS_DELETED     CHAR(1)            DEFAULT 'N',
+
+    /* ===============================
+       6) 대용량 바이너리 계열
+       =============================== */
+    USER_PROFILE   BLOB,
+    USER_DOC       BFILE,                              -- 외부 파일 참조
+
+    /* ===============================
+       7) 구조형/특수 타입 (선택)
+       =============================== */
+    META_JSON      CLOB CHECK (META_JSON IS JSON),    -- JSON 테스트
+    TAGS           VARCHAR2(4000),                     -- CSV/ARRAY 대체
+    USER_XML       XMLTYPE,                            -- XML 테스트
+
+    /* ===============================
+       8) NULL/옵션 테스트
+       =============================== */
+    OPTIONAL_COL   VARCHAR2(100),
+
+    CONSTRAINT TB_USER_V2_M1 PRIMARY KEY (USER_ID)
+);
+
+CREATE TABLE TB_USER_V2_M2 (
+    /* ===============================
+       1) 식별자 / 키 계열
+       =============================== */
+    USER_ID        VARCHAR2(100)        NOT NULL,      -- PK
+    USER_SEQ       NUMBER(19)           GENERATED ALWAYS AS IDENTITY,
+
+    /* ===============================
+       2) 문자열 계열
+       =============================== */
+    USER_NAME      VARCHAR2(100)        NOT NULL,
+    USER_NICK      CHAR(20),
+    USER_CODE      NVARCHAR2(50),                      -- 다국어 테스트
+    USER_DESC      CLOB,                               -- 대용량 텍스트
+
+    /* ===============================
+       3) 숫자 계열 (종합 테스트)
+       =============================== */
+    USER_AGE       NUMBER(3),                          -- 정수 소형
+    USER_COUNT     NUMBER(10),                         -- 중형 정수
+    USER_BIGINT    NUMBER(19),                         -- BIGINT 대체
+    USER_SCORE     NUMBER(15,4),                       -- DECIMAL
+    USER_RATE      FLOAT,                              -- 부동소수
+    USER_RATIO     BINARY_FLOAT,
+    USER_WEIGHT    BINARY_DOUBLE,
+
+    /* ===============================
+       4) 날짜/시간 계열 (전부 다)
+       =============================== */
+    CREATED_DATE   DATE               DEFAULT SYSDATE,
+    UPDATED_TS     TIMESTAMP,
+    UPDATED_TZ     TIMESTAMP WITH TIME ZONE,
+    UPDATED_LTZ    TIMESTAMP WITH LOCAL TIME ZONE,
+
+    /* ===============================
+       5) BOOLEAN 대체 및 상태값
+       =============================== */
+    IS_ACTIVE      CHAR(1)            DEFAULT 'Y',     -- Y/N
+    IS_DELETED     CHAR(1)            DEFAULT 'N',
+
+    /* ===============================
+       6) 대용량 바이너리 계열
+       =============================== */
+    USER_PROFILE   BLOB,
+    USER_DOC       BFILE,                              -- 외부 파일 참조
+
+    /* ===============================
+       7) 구조형/특수 타입 (선택)
+       =============================== */
+    META_JSON      CLOB CHECK (META_JSON IS JSON),    -- JSON 테스트
+    TAGS           VARCHAR2(4000),                     -- CSV/ARRAY 대체
+    USER_XML       XMLTYPE,                            -- XML 테스트
+
+    /* ===============================
+       8) NULL/옵션 테스트
+       =============================== */
+    OPTIONAL_COL   VARCHAR2(100),
+
+    CONSTRAINT TB_USER_V2_M2 PRIMARY KEY (USER_ID)
+);
+
+CREATE TABLE TB_USER_V2_M3 (
+    /* ===============================
+       1) 식별자 / 키 계열
+       =============================== */
+    USER_ID        VARCHAR2(100)        NOT NULL,      -- PK
+    USER_SEQ       NUMBER(19)           GENERATED ALWAYS AS IDENTITY,
+
+    /* ===============================
+       2) 문자열 계열
+       =============================== */
+    USER_NAME      VARCHAR2(100)        NOT NULL,
+    USER_NICK      CHAR(20),
+    USER_CODE      NVARCHAR2(50),                      -- 다국어 테스트
+    USER_DESC      CLOB,                               -- 대용량 텍스트
+
+    /* ===============================
+       3) 숫자 계열 (종합 테스트)
+       =============================== */
+    USER_AGE       NUMBER(3),                          -- 정수 소형
+    USER_COUNT     NUMBER(10),                         -- 중형 정수
+    USER_BIGINT    NUMBER(19),                         -- BIGINT 대체
+    USER_SCORE     NUMBER(15,4),                       -- DECIMAL
+    USER_RATE      FLOAT,                              -- 부동소수
+    USER_RATIO     BINARY_FLOAT,
+    USER_WEIGHT    BINARY_DOUBLE,
+
+    /* ===============================
+       4) 날짜/시간 계열 (전부 다)
+       =============================== */
+    CREATED_DATE   DATE               DEFAULT SYSDATE,
+    UPDATED_TS     TIMESTAMP,
+    UPDATED_TZ     TIMESTAMP WITH TIME ZONE,
+    UPDATED_LTZ    TIMESTAMP WITH LOCAL TIME ZONE,
+
+    /* ===============================
+       5) BOOLEAN 대체 및 상태값
+       =============================== */
+    IS_ACTIVE      CHAR(1)            DEFAULT 'Y',     -- Y/N
+    IS_DELETED     CHAR(1)            DEFAULT 'N',
+
+    /* ===============================
+       6) 대용량 바이너리 계열
+       =============================== */
+    USER_PROFILE   BLOB,
+    USER_DOC       BFILE,                              -- 외부 파일 참조
+
+    /* ===============================
+       7) 구조형/특수 타입 (선택)
+       =============================== */
+    META_JSON      CLOB CHECK (META_JSON IS JSON),    -- JSON 테스트
+    TAGS           VARCHAR2(4000),                     -- CSV/ARRAY 대체
+    USER_XML       XMLTYPE,                            -- XML 테스트
+
+    /* ===============================
+       8) NULL/옵션 테스트
+       =============================== */
+    OPTIONAL_COL   VARCHAR2(100),
+
+    CONSTRAINT TB_USER_V2_M3 PRIMARY KEY (USER_ID)
+);
+
+====================================================================================================
+= 마스터 디테일 테스트를 위한 디테일 테이블 생성
+====================================================================================================
+
+CREATE TABLE TB_USER_V2_D1 (
+    HIST_ID        NUMBER(10)       NOT NULL,      -- 이력 PK
+    USER_ID        VARCHAR2(100)    NOT NULL,      -- 부모키(FK)
+    CHANGE_TYPE    VARCHAR2(20)     NOT NULL,      -- 변경유형 (UPDATE/LOGIN/LOCK/UNLOCK 등)
+    CHANGE_DESC    VARCHAR2(200),                  -- 변경내용 요약
+    CHANGE_DTTM    TIMESTAMP        DEFAULT SYSTIMESTAMP, -- 변경일시
+    CREATED_BY     VARCHAR2(50),                   -- 변경자
+
+    CONSTRAINT PK_TB_USER_V2_D1 PRIMARY KEY (HIST_ID),
+    CONSTRAINT FK_TB_USER_V2_D1 
+        FOREIGN KEY (USER_ID) REFERENCES TB_USER_V2(USER_ID)
+);
+
+CREATE TABLE TB_USER_V2_D2 (
+    HIST_ID        NUMBER(10)       NOT NULL,      -- 이력 PK
+    USER_ID        VARCHAR2(100)    NOT NULL,      -- 부모키(FK)
+    CHANGE_TYPE    VARCHAR2(20)     NOT NULL,      -- 변경유형 (UPDATE/LOGIN/LOCK/UNLOCK 등)
+    CHANGE_DESC    VARCHAR2(200),                  -- 변경내용 요약
+    CHANGE_DTTM    TIMESTAMP        DEFAULT SYSTIMESTAMP, -- 변경일시
+    CREATED_BY     VARCHAR2(50),                   -- 변경자
+
+    CONSTRAINT PK_TB_USER_V2_D2 PRIMARY KEY (HIST_ID),
+    CONSTRAINT FK_TB_USER_V2_D2 
+        FOREIGN KEY (USER_ID) REFERENCES TB_USER_V2(USER_ID)
+);
+
+CREATE TABLE TB_USER_V2_D3 (
+    HIST_ID        NUMBER(10)       NOT NULL,      -- 이력 PK
+    USER_ID        VARCHAR2(100)    NOT NULL,      -- 부모키(FK)
+    CHANGE_TYPE    VARCHAR2(20)     NOT NULL,      -- 변경유형 (UPDATE/LOGIN/LOCK/UNLOCK 등)
+    CHANGE_DESC    VARCHAR2(200),                  -- 변경내용 요약
+    CHANGE_DTTM    TIMESTAMP        DEFAULT SYSTIMESTAMP, -- 변경일시
+    CREATED_BY     VARCHAR2(50),                   -- 변경자
+
+    CONSTRAINT PK_TB_USER_V2_D3 PRIMARY KEY (HIST_ID),
+    CONSTRAINT FK_TB_USER_V2_D3 
+        FOREIGN KEY (USER_ID) REFERENCES TB_USER_V2(USER_ID)
+);

@@ -1,0 +1,13 @@
+# data_dump, batch_size, commit_action, commit_scope 모두 생략 → 기본값 검증용
+api_name: test_defaults
+
+target_system_key: TEST_ORACLE
+target_jndi_name: jdbc/TEST
+
+operations:
+  - operation_name: test_op
+    action_type: INSERT
+    sql: |
+      INSERT INTO TB_TEST (ID) VALUES (:ID)
+    fields:
+      - { data_field: ID, param: ID, type: STRING }

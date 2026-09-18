@@ -1,0 +1,89 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": "BULK82_01", "USER_NAME": "BulkTest_82_1",  "USER_NICK": "BULK82_01",
+                    "USER_CODE": "BULK82_001", "USER_AGE": 21, "USER_COUNT": 1,
+                    "USER_BIGINT": 100000083, "USER_SCORE": 82.1, "USER_RATE": 0.8301, "USER_RATIO": 1.8301, "USER_WEIGHT": 70.5,
+                    "CREATED_DATE": "2026-04-07", "UPDATED_TS": "2026-04-07T10:00:00.000",
+                    "UPDATED_TZ": "2026-04-07T10:00:00.000+09:00", "UPDATED_LTZ": "2026-04-07T10:00:00.000+09:00",
+                    "IS_ACTIVE": "Y", "IS_DELETED": "N", "TAGS": "bulk,test,82,row1", "OPTIONAL_COL": "TC082"
+                },
+                {
+                    "USER_ID": "BULK82_02", "USER_NAME": "BulkTest_82_2",  "USER_NICK": "BULK82_02",
+                    "USER_CODE": "BULK82_002", "USER_AGE": 22, "USER_COUNT": 2,
+                    "USER_BIGINT": 100000084, "USER_SCORE": 82.2, "USER_RATE": 0.8302, "USER_RATIO": 1.8302, "USER_WEIGHT": 71.0,
+                    "CREATED_DATE": "2026-04-07", "UPDATED_TS": "2026-04-07T10:00:00.000",
+                    "UPDATED_TZ": "2026-04-07T10:00:00.000+09:00", "UPDATED_LTZ": "2026-04-07T10:00:00.000+09:00",
+                    "IS_ACTIVE": "Y", "IS_DELETED": "N", "TAGS": "bulk,test,82,row2", "OPTIONAL_COL": "TC082"
+                },
+                {
+                    "USER_ID": "BULK82_03", "USER_NAME": "BulkTest_82_3",  "USER_NICK": "BULK82_03",
+                    "USER_CODE": "BULK82_003", "USER_AGE": 23, "USER_COUNT": 3,
+                    "USER_BIGINT": 100000085, "USER_SCORE": 82.3, "USER_RATE": 0.8303, "USER_RATIO": 1.8303, "USER_WEIGHT": 71.5,
+                    "CREATED_DATE": "2026-04-07", "UPDATED_TS": "2026-04-07T10:00:00.000",
+                    "UPDATED_TZ": "2026-04-07T10:00:00.000+09:00", "UPDATED_LTZ": "2026-04-07T10:00:00.000+09:00",
+                    "IS_ACTIVE": "Y", "IS_DELETED": "N", "TAGS": "bulk,test,82,row3", "OPTIONAL_COL": "TC082"
+                },
+                {
+                    "USER_ID": "BULK82_04", "USER_NAME": "BulkTest_82_4",  "USER_NICK": "BULK82_04",
+                    "USER_CODE": "BULK82_004", "USER_AGE": 24, "USER_COUNT": 4,
+                    "USER_BIGINT": 100000086, "USER_SCORE": 82.4, "USER_RATE": 0.8304, "USER_RATIO": 1.8304, "USER_WEIGHT": 72.0,
+                    "CREATED_DATE": "2026-04-07", "UPDATED_TS": "2026-04-07T10:00:00.000",
+                    "UPDATED_TZ": "2026-04-07T10:00:00.000+09:00", "UPDATED_LTZ": "2026-04-07T10:00:00.000+09:00",
+                    "IS_ACTIVE": "Y", "IS_DELETED": "N", "TAGS": "bulk,test,82,row4", "OPTIONAL_COL": "TC082"
+                },
+                {
+                    "USER_ID": "BULK82_05", "USER_NAME": "BulkTest_82_5",  "USER_NICK": "BULK82_05",
+                    "USER_CODE": "BULK82_005", "USER_AGE": 25, "USER_COUNT": 5,
+                    "USER_BIGINT": 100000087, "USER_SCORE": 82.5, "USER_RATE": 0.8305, "USER_RATIO": 1.8305, "USER_WEIGHT": 72.5,
+                    "CREATED_DATE": "2026-04-07", "UPDATED_TS": "2026-04-07T10:00:00.000",
+                    "UPDATED_TZ": "2026-04-07T10:00:00.000+09:00", "UPDATED_LTZ": "2026-04-07T10:00:00.000+09:00",
+                    "IS_ACTIVE": "Y", "IS_DELETED": "N", "TAGS": "bulk,test,82,row5", "OPTIONAL_COL": "TC082"
+                },
+                {
+                    "USER_ID": "BULK82_06", "USER_NAME": "BulkTest_82_6",  "USER_NICK": "BULK82_06",
+                    "USER_CODE": "BULK82_006", "USER_AGE": 26, "USER_COUNT": 6,
+                    "USER_BIGINT": 100000088, "USER_SCORE": 82.6, "USER_RATE": 0.8306, "USER_RATIO": 1.8306, "USER_WEIGHT": 73.0,
+                    "CREATED_DATE": "2026-04-07", "UPDATED_TS": "2026-04-07T10:00:00.000",
+                    "UPDATED_TZ": "2026-04-07T10:00:00.000+09:00", "UPDATED_LTZ": "2026-04-07T10:00:00.000+09:00",
+                    "IS_ACTIVE": "Y", "IS_DELETED": "N", "TAGS": "bulk,test,82,row6", "OPTIONAL_COL": "TC082"
+                },
+                {
+                    "USER_ID": "BULK82_07", "USER_NAME": "BulkTest_82_7",  "USER_NICK": "BULK82_07",
+                    "USER_CODE": "BULK82_007", "USER_AGE": 27, "USER_COUNT": 7,
+                    "USER_BIGINT": 100000089, "USER_SCORE": 82.7, "USER_RATE": 0.8307, "USER_RATIO": 1.8307, "USER_WEIGHT": 73.5,
+                    "CREATED_DATE": "2026-04-07", "UPDATED_TS": "2026-04-07T10:00:00.000",
+                    "UPDATED_TZ": "2026-04-07T10:00:00.000+09:00", "UPDATED_LTZ": "2026-04-07T10:00:00.000+09:00",
+                    "IS_ACTIVE": "Y", "IS_DELETED": "N", "TAGS": "bulk,test,82,row7", "OPTIONAL_COL": "TC082"
+                },
+                {
+                    "USER_ID": "BULK82_08", "USER_NAME": "BulkTest_82_8",  "USER_NICK": "BULK82_08",
+                    "USER_CODE": "BULK82_008", "USER_AGE": 28, "USER_COUNT": 8,
+                    "USER_BIGINT": 100000090, "USER_SCORE": 82.8, "USER_RATE": 0.8308, "USER_RATIO": 1.8308, "USER_WEIGHT": 74.0,
+                    "CREATED_DATE": "2026-04-07", "UPDATED_TS": "2026-04-07T10:00:00.000",
+                    "UPDATED_TZ": "2026-04-07T10:00:00.000+09:00", "UPDATED_LTZ": "2026-04-07T10:00:00.000+09:00",
+                    "IS_ACTIVE": "Y", "IS_DELETED": "N", "TAGS": "bulk,test,82,row8", "OPTIONAL_COL": "TC082"
+                },
+                {
+                    "USER_ID": "BULK82_09", "USER_NAME": "BulkTest_82_9",  "USER_NICK": "BULK82_09",
+                    "USER_CODE": "BULK82_009", "USER_AGE": 29, "USER_COUNT": 9,
+                    "USER_BIGINT": 100000091, "USER_SCORE": 82.9, "USER_RATE": 0.8309, "USER_RATIO": 1.8309, "USER_WEIGHT": 74.5,
+                    "CREATED_DATE": "2026-04-07", "UPDATED_TS": "2026-04-07T10:00:00.000",
+                    "UPDATED_TZ": "2026-04-07T10:00:00.000+09:00", "UPDATED_LTZ": "2026-04-07T10:00:00.000+09:00",
+                    "IS_ACTIVE": "Y", "IS_DELETED": "N", "TAGS": "bulk,test,82,row9", "OPTIONAL_COL": "TC082"
+                },
+                {
+                    "USER_ID": "BULK82_10", "USER_NAME": "BulkTest_82_10", "USER_NICK": "BULK82_10",
+                    "USER_CODE": "BULK82_010", "USER_AGE": 30, "USER_COUNT": 10,
+                    "USER_BIGINT": 100000092, "USER_SCORE": 83.0, "USER_RATE": 0.8310, "USER_RATIO": 1.8310, "USER_WEIGHT": 75.0,
+                    "CREATED_DATE": "2026-04-07", "UPDATED_TS": "2026-04-07T10:00:00.000",
+                    "UPDATED_TZ": "2026-04-07T10:00:00.000+09:00", "UPDATED_LTZ": "2026-04-07T10:00:00.000+09:00",
+                    "IS_ACTIVE": "Y", "IS_DELETED": "N", "TAGS": "bulk,test,82,row10", "OPTIONAL_COL": "TC082"
+                }
+            ]
+        }
+    }
+}

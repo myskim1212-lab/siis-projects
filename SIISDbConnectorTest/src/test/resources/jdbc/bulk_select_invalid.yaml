@@ -1,0 +1,15 @@
+# bulk=true 를 SELECT 에 설정한 경우 → 검증 에러 발생해야 함
+api_name: test_bulk_select_invalid
+target_system_key: TEST
+target_jndi_name: jdbc/TEST
+operations:
+  - operation_name: select_bulk_op
+    action_type: SELECT
+    data_record: data
+    bulk: true
+    sql: |
+      SELECT USER_ID, USER_NAME FROM TB_USER WHERE STATUS = :STATUS
+    fields:
+      - { data_field: STATUS, param: STATUS, type: STRING, direction: IN }
+      - { data_field: USER_ID, param: USER_ID, type: STRING }
+      - { data_field: USER_NAME, param: USER_NAME, type: STRING }

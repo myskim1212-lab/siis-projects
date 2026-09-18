@@ -1,0 +1,59 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null
+    },
+    "batch": {
+        "data": [
+            {
+                "USER_ID": "DRP78_1",
+                "USER_NAME": "OpDataRecordPath_78_1",
+                "USER_NICK": "DRP78_1",
+                "USER_CODE": "DRP78_001",
+                "USER_DESC": "TC078 op-level data_record_path 테스트 - row1",
+                "USER_AGE": 30,
+                "USER_COUNT": 1,
+                "USER_BIGINT": 100000031,
+                "USER_SCORE": 78.1,
+                "USER_RATE": 0.781,
+                "USER_RATIO": 1.781,
+                "USER_WEIGHT": 73.0,
+                "CREATED_DATE": "2026-04-02",
+                "UPDATED_TS": "2026-04-02T10:00:00.000",
+                "UPDATED_TZ": "2026-04-02T10:00:00.000+09:00",
+                "UPDATED_LTZ": "2026-04-02T10:00:00.000+09:00",
+                "IS_ACTIVE": "Y",
+                "IS_DELETED": "N",
+                "USER_PROFILE": "QklOQVJZXzE=",
+                "META_JSON": "{\"tc\": \"078\", \"row\": 1}",
+                "TAGS": "drp,test,78",
+                "USER_XML": "<user><id>DRP78_1</id></user>",
+                "OPTIONAL_COL": "TC078"
+            },
+            {
+                "USER_ID": "DRP78_2",
+                "USER_NAME": "OpDataRecordPath_78_2",
+                "USER_NICK": "DRP78_2",
+                "USER_CODE": "DRP78_002",
+                "USER_DESC": "TC078 op-level data_record_path 테스트 - row2",
+                "USER_AGE": 31,
+                "USER_COUNT": 2,
+                "USER_BIGINT": 100000032,
+                "USER_SCORE": 78.2,
+                "USER_RATE": 0.782,
+                "USER_RATIO": 1.782,
+                "USER_WEIGHT": 73.1,
+                "CREATED_DATE": "2026-04-02",
+                "UPDATED_TS": "2026-04-02T10:00:00.000",
+                "UPDATED_TZ": "2026-04-02T10:00:00.000+09:00",
+                "UPDATED_LTZ": "2026-04-02T10:00:00.000+09:00",
+                "IS_ACTIVE": "Y",
+                "IS_DELETED": "N",
+                "USER_PROFILE": "QklOQVJZXzI=",
+                "META_JSON": "{\"tc\": \"078\", \"row\": 2}",
+                "TAGS": "drp,test,78",
+                "USER_XML": "<user><id>DRP78_2</id></user>",
+                "OPTIONAL_COL": "TC078"
+            }
+        ]
+    }
+}

@@ -1,0 +1,64 @@
+{
+  "operations": {
+    "delete_tb_user_v2_d1": null,
+    "delete_tb_user_v2_d2": null,
+    "delete_tb_user_v2_d3": null,
+    "delete_tb_user_v2": null,
+    "insert_tb_user_v2": {
+      "data": [
+        {
+          "USER_ID": "TC023_M001",
+          "USER_NAME": "마스터_TC023",
+          "USER_NICK": "NICK_M",
+          "USER_CODE": "CODE_M001",
+          "USER_DESC": "Master-Detail 롤백 테스트용 마스터 레코드",
+          "USER_AGE": 35,
+          "USER_COUNT": 10,
+          "USER_BIGINT": 9999999,
+          "USER_SCORE": 77.77,
+          "USER_RATE": 0.77777777,
+          "USER_RATIO": 1.7777,
+          "USER_WEIGHT": 77.77,
+          "CREATED_DATE": "2026-02-01",
+          "UPDATED_TS": "2026-02-01T10:00:00.000",
+          "UPDATED_TZ": "2026-02-01T10:00:00.000000+09:00",
+          "UPDATED_LTZ": "2026-02-01T10:00:00.000000+09:00",
+          "IS_ACTIVE": "Y",
+          "IS_DELETED": "N",
+          "USER_PROFILE": "VEMwMjM=",
+          "META_JSON": "{\"test\": \"TC023\", \"type\": \"master-detail rollback\"}",
+          "TAGS": "tc023,rollback,test",
+          "USER_XML": "<user><id>TC023_M001</id></user>",
+          "OPTIONAL_COL": null,
+          "tb_user_v2_d1": [
+            {
+              "HIST_ID": 1,
+              "CHANGE_TYPE": "INSERT",
+              "CHANGE_DESC": "초기등록",
+              "CHANGE_DTTM": "2026-02-01T10:00:00.000",
+              "CREATED_BY": "admin"
+            }
+          ],
+          "tb_user_v2_d2": [
+            {
+              "HIST_ID": 1,
+              "CHANGE_TYPE": null,
+              "CHANGE_DESC": null,
+              "CHANGE_DTTM": "2026-02-01T10:00:00.000",
+              "CREATED_BY": null
+            }
+          ],
+          "tb_user_v2_d3": [
+            {
+              "HIST_ID": 1,
+              "CHANGE_TYPE": "UPDATE",
+              "CHANGE_DESC": "후속변경",
+              "CHANGE_DTTM": "2026-02-01T10:00:00.000",
+              "CREATED_BY": "admin"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

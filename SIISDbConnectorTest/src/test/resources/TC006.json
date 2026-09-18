@@ -1,0 +1,34 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": "ID_1",
+                    "USER_NAME": "LargeClob_1",
+                    "USER_NICK": "NICK_1",
+                    "USER_CODE": "LARGE_CODE_1",
+                    "USER_DESC": "LARGE_CLOB_START: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. REPEAT_BLOCK_1: The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. How valiantly did he jump over the golden fence! REPEAT_BLOCK_2: Large text block for CLOB testing purposes. This block contains enough data to simulate a real-world large CLOB scenario. SPECIAL_CHARS: ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 !@#$%^and*()_+-=[]{}|;:,. REPEAT_BLOCK_3: The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. How valiantly did he jump over the golden fence! REPEAT_BLOCK_4: Lorem ipsum dolor sit amet, consectetur adipiscing elit. REPEAT_BLOCK_5: Sphinx of black quartz, judge my vow. Mr. Jock, TV quiz Ph.D., bags few lynx. REPEAT_END. DATA_ID:1",
+                    "USER_AGE": 20,
+                    "USER_COUNT": 1000,
+                    "USER_BIGINT": 922337203685477580,
+                    "USER_SCORE": 88.1234,
+                    "USER_RATE": 0.12345678,
+                    "USER_RATIO": 1.2345,
+                    "USER_WEIGHT": 75.4321,
+                    "CREATED_DATE": "2026-01-01",
+                    "UPDATED_TS": "2026-01-01T00:00:00.000",
+                    "UPDATED_TZ": "2026-01-01T00:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-01-01T00:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "QklOQVJZXzY=",
+                    "META_JSON": "{\"type\":\"large_clob\",\"size\":5000}",
+                    "TAGS": "large,clob,test",
+                    "USER_XML": "<user><id>1</id><type>large_clob</type></user>",
+                    "OPTIONAL_COL": "TC006"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,34 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": "ID_1",
+                    "USER_NAME": "Special\u2605_User_1",
+                    "USER_NICK": "NICK_1",
+                    "USER_CODE": "\uD83D\uDD11_\uD55C_1_\u2211_\u03C0_\u03A9_\u2605_\u33D8",
+                    "USER_DESC": "--- Special Chars Report ---\nNewline(LF) and Tab(TAB)\tCheck\nEmoji: \uD83D\uDE80, \uD83D\uDCA1, \uD83D\uDEE0\uFE0F, \uD83D\uDCC9\nMath/Tech: \u221A, \u221E, \u00B1, \u2260, \u2286, \u2297\nBrackets: \u300C\u300D, \u300E\u300F, \u3008\u3009, \u201C\u201D, \u2018\u2019\nData: 1",
+                    "USER_AGE": 20,
+                    "USER_COUNT": 1000,
+                    "USER_BIGINT": 922337203685477580,
+                    "USER_SCORE": 88.1234,
+                    "USER_RATE": 0.12345678,
+                    "USER_RATIO": 1.2345,
+                    "USER_WEIGHT": 75.4321,
+                    "CREATED_DATE": "2026-01-01",
+                    "UPDATED_TS": "2026-01-01T00:00:00.000",
+                    "UPDATED_TZ": "2026-01-01T00:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-01-01T00:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "QklOQVJZXzE=",
+                    "META_JSON": "{\"desc\": \"Special \u2605 text\", \"val\": 0}",
+                    "TAGS": "java,\u2211,\u03A9,test",
+                    "USER_XML": "<user><msg>Hello \uD83D\uDE80</msg><id>1</id></user>",
+                    "OPTIONAL_COL": "TC007"
+                }
+            ]
+        }
+    }
+}

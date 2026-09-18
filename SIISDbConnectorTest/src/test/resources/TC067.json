@@ -1,0 +1,9 @@
+{
+    "operations": {
+        "select_tb_user_v2": {
+            "data": [
+                { "IS_ACTIVE": "Y", "USER_AGE": 25 }
+            ]
+        }
+    }
+}

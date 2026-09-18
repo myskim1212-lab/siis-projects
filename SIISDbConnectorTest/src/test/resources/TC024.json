@@ -1,0 +1,144 @@
+{
+  "operations": {
+    "delete_tb_user_v2_d1": null,
+    "delete_tb_user_v2_d2": null,
+    "delete_tb_user_v2_d3": null,
+    "delete_tb_user_v2": null,
+    "insert_tb_user_v2": {
+      "data": [
+        {
+          "USER_ID": "TC024_M001",
+          "USER_NAME": "마스터_TC024_첫번째",
+          "USER_NICK": "NICK_M1",
+          "USER_CODE": "CODE_M001",
+          "USER_DESC": "Master 2건 테스트 - 첫번째 마스터",
+          "USER_AGE": 25,
+          "USER_COUNT": 5,
+          "USER_BIGINT": 1000000,
+          "USER_SCORE": 90.5,
+          "USER_RATE": 0.90500000,
+          "USER_RATIO": 1.905,
+          "USER_WEIGHT": 68.0,
+          "CREATED_DATE": "2026-02-10",
+          "UPDATED_TS": "2026-02-10T09:00:00.000",
+          "UPDATED_TZ": "2026-02-10T09:00:00.000000+09:00",
+          "UPDATED_LTZ": "2026-02-10T09:00:00.000000+09:00",
+          "IS_ACTIVE": "Y",
+          "IS_DELETED": "N",
+          "USER_PROFILE": "VEMWMDE=",
+          "META_JSON": "{\"master\": 1, \"test\": \"TC024\"}",
+          "TAGS": "tc024,master1",
+          "USER_XML": "<user><id>TC024_M001</id></user>",
+          "OPTIONAL_COL": "OPT_M1",
+          "tb_user_v2_d1": [
+            {
+              "HIST_ID": 1,
+              "CHANGE_TYPE": "INSERT",
+              "CHANGE_DESC": "M1 초기등록",
+              "CHANGE_DTTM": "2026-02-10T09:00:00.000",
+              "CREATED_BY": "system"
+            },
+            {
+              "HIST_ID": 2,
+              "CHANGE_TYPE": "UPDATE",
+              "CHANGE_DESC": "M1 정보수정",
+              "CHANGE_DTTM": "2026-02-10T10:00:00.000",
+              "CREATED_BY": "admin"
+            },
+            {
+              "HIST_ID": 3,
+              "CHANGE_TYPE": "UPDATE",
+              "CHANGE_DESC": "M1 상태변경",
+              "CHANGE_DTTM": "2026-02-10T11:00:00.000",
+              "CREATED_BY": "admin"
+            }
+          ],
+          "tb_user_v2_d2": [
+            {
+              "HIST_ID": 1,
+              "CHANGE_TYPE": "INSERT",
+              "CHANGE_DESC": "M1 d2 이력1",
+              "CHANGE_DTTM": "2026-02-10T09:00:00.000",
+              "CREATED_BY": "system"
+            }
+          ],
+          "tb_user_v2_d3": [
+            {
+              "HIST_ID": 1,
+              "CHANGE_TYPE": "INSERT",
+              "CHANGE_DESC": "M1 d3 이력1",
+              "CHANGE_DTTM": "2026-02-10T09:00:00.000",
+              "CREATED_BY": "system"
+            },
+            {
+              "HIST_ID": 2,
+              "CHANGE_TYPE": "UPDATE",
+              "CHANGE_DESC": "M1 d3 이력2",
+              "CHANGE_DTTM": "2026-02-10T10:00:00.000",
+              "CREATED_BY": "admin"
+            }
+          ]
+        },
+        {
+          "USER_ID": "TC024_M002",
+          "USER_NAME": "마스터_TC024_두번째",
+          "USER_NICK": "NICK_M2",
+          "USER_CODE": "CODE_M002",
+          "USER_DESC": "Master 2건 테스트 - 두번째 마스터",
+          "USER_AGE": 40,
+          "USER_COUNT": 20,
+          "USER_BIGINT": 2000000,
+          "USER_SCORE": 75.3,
+          "USER_RATE": 0.75300000,
+          "USER_RATIO": 1.753,
+          "USER_WEIGHT": 80.5,
+          "CREATED_DATE": "2026-02-11",
+          "UPDATED_TS": "2026-02-11T09:00:00.000",
+          "UPDATED_TZ": "2026-02-11T09:00:00.000000+09:00",
+          "UPDATED_LTZ": "2026-02-11T09:00:00.000000+09:00",
+          "IS_ACTIVE": "Y",
+          "IS_DELETED": "N",
+          "USER_PROFILE": "VEMWMDI=",
+          "META_JSON": "{\"master\": 2, \"test\": \"TC024\"}",
+          "TAGS": "tc024,master2",
+          "USER_XML": "<user><id>TC024_M002</id></user>",
+          "OPTIONAL_COL": null,
+          "tb_user_v2_d1": [
+            {
+              "HIST_ID": 11,
+              "CHANGE_TYPE": "INSERT",
+              "CHANGE_DESC": "M2 초기등록",
+              "CHANGE_DTTM": "2026-02-11T09:00:00.000",
+              "CREATED_BY": "system"
+            }
+          ],
+          "tb_user_v2_d2": [
+            {
+              "HIST_ID": 11,
+              "CHANGE_TYPE": "INSERT",
+              "CHANGE_DESC": "M2 d2 이력1",
+              "CHANGE_DTTM": "2026-02-11T09:00:00.000",
+              "CREATED_BY": "system"
+            },
+            {
+              "HIST_ID": 21,
+              "CHANGE_TYPE": "UPDATE",
+              "CHANGE_DESC": "M2 d2 이력2",
+              "CHANGE_DTTM": "2026-02-11T10:00:00.000",
+              "CREATED_BY": "admin"
+            }
+          ],
+          "tb_user_v2_d3": [
+            {
+              "HIST_ID": 11,
+              "CHANGE_TYPE": "INSERT",
+              "CHANGE_DESC": "M2 d3 이력1",
+              "CHANGE_DTTM": "2026-02-11T09:00:00.000",
+              "CREATED_BY": "system"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

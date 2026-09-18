@@ -1,0 +1,42 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": "OUT_TEST_001",
+                    "USER_NAME": "OUT파라메터테스터",
+                    "USER_NICK": "OUTNICK",
+                    "USER_CODE": "OUT_CODE_001",
+                    "USER_DESC": "OUT 파라메터 테스트용 데이터",
+                    "USER_AGE": 30,
+                    "USER_COUNT": 1,
+                    "USER_BIGINT": 100,
+                    "USER_SCORE": 99.99,
+                    "USER_RATE": 0.5,
+                    "USER_RATIO": 1.5,
+                    "USER_WEIGHT": 70.0,
+                    "CREATED_DATE": "2026-01-01",
+                    "UPDATED_TS": "2026-01-01T00:00:00.000",
+                    "UPDATED_TZ": "2026-01-01T00:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-01-01T00:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "QVJSVTI=",
+                    "META_JSON": "{\"test\": \"out_param\"}",
+                    "TAGS": "out,test",
+                    "USER_XML": "<user><id>OUT_TEST_001</id></user>",
+                    "OPTIONAL_COL": null
+                }
+            ]
+        },
+        "proc_tb_user_v2_out": {
+            "data": [
+                {
+                    "USER_ID": "OUT_TEST_001",
+                    "USER_NAME": "OUT파라메터테스터"
+                }
+            ]
+        }
+    }
+}

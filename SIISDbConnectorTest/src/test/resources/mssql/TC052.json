@@ -1,0 +1,34 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": "HX_99",
+                    "USER_NAME": "HTML_User_99 <>&\"'",
+                    "USER_NICK": "HX99",
+                    "USER_CODE": "HX_CODE_99",
+                    "USER_DESC": "HTML/XML Round-Trip:\n<root><child attr=\"val\">text &amp; more</child></root>\nSpecial: <!-- comment --> <![CDATA[data]]>\nData: 99",
+                    "USER_AGE": 30,
+                    "USER_COUNT": 1099,
+                    "USER_BIGINT": 922337203685477580,
+                    "USER_SCORE": 88.1234,
+                    "USER_RATE": 0.12345678,
+                    "USER_RATIO": 1.2345,
+                    "USER_WEIGHT": 75.4321,
+                    "CREATED_DATE": "2026-01-01",
+                    "UPDATED_TS": "2026-01-01T00:00:00.000",
+                    "UPDATED_TZ": "2026-01-01T00:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-01-01T00:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "aHhfOTk=",
+                    "META_JSON": "{\"html\":true,\"roundtrip\":99}",
+                    "TAGS": "html,xml,roundtrip",
+                    "USER_XML": "<user><data><![CDATA[<html>&amp;</html>]]></data></user>",
+                    "OPTIONAL_COL": "TC054"
+                }
+            ]
+        }
+    }
+}

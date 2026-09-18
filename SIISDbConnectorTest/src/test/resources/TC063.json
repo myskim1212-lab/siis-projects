@@ -1,0 +1,15 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {"USER_ID":"ID_1","USER_NAME":"Before_Upsert_1","USER_NICK":"NK1","USER_CODE":"CD1","USER_DESC":"TC063 setup row before upsert","USER_AGE":20,"USER_COUNT":1000,"USER_BIGINT":922337203685477580,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzE=","META_JSON":"{\"phase\":\"before\"}","TAGS":"before","USER_XML":"<u><phase>before</phase></u>","OPTIONAL_COL":"TC063_BEFORE"}
+            ]
+        },
+        "upsert_tb_user_v2": {
+            "data": [
+                {"USER_ID":"ID_1","USER_NAME":"After_Upsert_1","USER_NICK":"UNK1","USER_CODE":"UCD1","USER_DESC":"TC063 upsert update row","USER_AGE":63,"USER_COUNT":6300,"USER_BIGINT":633333333333333333,"USER_SCORE":63.63,"USER_RATE":0.63636363,"USER_RATIO":6.3636,"USER_WEIGHT":63.6363,"CREATED_DATE":"2026-06-01","UPDATED_TS":"2026-06-30T12:00:00.000","UPDATED_TZ":"2026-06-30T12:00:00.000+09:00","UPDATED_LTZ":"2026-06-30T12:00:00.000+09:00","IS_ACTIVE":"N","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzY=","META_JSON":"{\"tc\":\"TC063\",\"op\":\"update\"}","TAGS":"upsert,update","USER_XML":"<u><op>update</op></u>","OPTIONAL_COL":"TC063_AFTER"}
+            ]
+        }
+    }
+}

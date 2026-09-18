@@ -1,0 +1,58 @@
+{
+    "operations": {
+        "insert_tb_user_v2": {
+            "data": [
+                {
+                    "USER_ID": "EIND81_1",
+                    "USER_NAME": "ExecIfNoData_81_1",
+                    "USER_NICK": "EIND81_1",
+                    "USER_CODE": "EIND81_001",
+                    "USER_DESC": "TC081 execute_if_no_data 테스트 - delete/proc은 op키 없이 강제 실행, insert는 표준 경로 파싱",
+                    "USER_AGE": 30,
+                    "USER_COUNT": 1,
+                    "USER_BIGINT": 100000051,
+                    "USER_SCORE": 81.1,
+                    "USER_RATE": 0.811,
+                    "USER_RATIO": 1.811,
+                    "USER_WEIGHT": 75.0,
+                    "CREATED_DATE": "2026-04-02",
+                    "UPDATED_TS": "2026-04-02T12:00:00.000",
+                    "UPDATED_TZ": "2026-04-02T12:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-04-02T12:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "QklOQVJZXzE=",
+                    "META_JSON": "{\"tc\": \"081\", \"row\": 1}",
+                    "TAGS": "execute_if_no_data,test,81",
+                    "USER_XML": "<user><id>EIND81_1</id></user>",
+                    "OPTIONAL_COL": "TC081"
+                },
+                {
+                    "USER_ID": "EIND81_2",
+                    "USER_NAME": "ExecIfNoData_81_2",
+                    "USER_NICK": "EIND81_2",
+                    "USER_CODE": "EIND81_002",
+                    "USER_DESC": "TC081 execute_if_no_data 테스트 - row2",
+                    "USER_AGE": 31,
+                    "USER_COUNT": 2,
+                    "USER_BIGINT": 100000052,
+                    "USER_SCORE": 81.2,
+                    "USER_RATE": 0.812,
+                    "USER_RATIO": 1.812,
+                    "USER_WEIGHT": 75.1,
+                    "CREATED_DATE": "2026-04-02",
+                    "UPDATED_TS": "2026-04-02T12:00:00.000",
+                    "UPDATED_TZ": "2026-04-02T12:00:00.000+09:00",
+                    "UPDATED_LTZ": "2026-04-02T12:00:00.000+09:00",
+                    "IS_ACTIVE": "Y",
+                    "IS_DELETED": "N",
+                    "USER_PROFILE": "QklOQVJZXzI=",
+                    "META_JSON": "{\"tc\": \"081\", \"row\": 2}",
+                    "TAGS": "execute_if_no_data,test,81",
+                    "USER_XML": "<user><id>EIND81_2</id></user>",
+                    "OPTIONAL_COL": "TC081"
+                }
+            ]
+        }
+    }
+}

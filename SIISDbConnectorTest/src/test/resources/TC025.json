@@ -1,0 +1,89 @@
+{
+  "operations": {
+    "delete_tb_user_v2": {
+      "data": null
+    },
+    "insert_tb_user_v2": {
+      "data": [
+        {
+          "_comment": "최소 날짜값",
+          "USER_ID": "TC025_DATE_MIN",
+          "USER_NAME": "날짜최소값_TC025",
+          "USER_NICK": "DATE_MIN",
+          "USER_CODE": "CODE_DMIN",
+          "USER_DESC": "날짜 최소값 테스트: 1900-01-01",
+          "USER_AGE": 10,
+          "USER_COUNT": 1,
+          "USER_BIGINT": 1,
+          "USER_SCORE": 0.0001,
+          "USER_RATE": 0.00000001,
+          "USER_RATIO": 0.0001,
+          "USER_WEIGHT": 0.0001,
+          "CREATED_DATE": "1900-01-01",
+          "UPDATED_TS": "1900-01-01T00:00:00.000",
+          "UPDATED_TZ": "1900-01-01T00:00:00.000000+09:00",
+          "UPDATED_LTZ": "1900-01-01T00:00:00.000000+09:00",
+          "IS_ACTIVE": "Y",
+          "IS_DELETED": "N",
+          "USER_PROFILE": "QUFBQQ==",
+          "META_JSON": "{\"type\": \"date_min\"}",
+          "TAGS": "date,min,boundary",
+          "USER_XML": "<user><id>TC025_DATE_MIN</id></user>",
+          "OPTIONAL_COL": null
+        },
+        {
+          "_comment": "최대 날짜값",
+          "USER_ID": "TC025_DATE_MAX",
+          "USER_NAME": "날짜최대값_TC025",
+          "USER_NICK": "DATE_MAX",
+          "USER_CODE": "CODE_DMAX",
+          "USER_DESC": "날짜 최대값 테스트: 9999-12-31",
+          "USER_AGE": 99,
+          "USER_COUNT": 9999,
+          "USER_BIGINT": 9999999999,
+          "USER_SCORE": 9999.9999,
+          "USER_RATE": 0.99999999,
+          "USER_RATIO": 9.9999,
+          "USER_WEIGHT": 999.9999,
+          "CREATED_DATE": "9999-12-31",
+          "UPDATED_TS": "9999-12-31T23:59:59.999",
+          "UPDATED_TZ": "9999-12-31T23:59:59.999999+09:00",
+          "UPDATED_LTZ": "9999-12-31T23:59:59.999999+09:00",
+          "IS_ACTIVE": "Y",
+          "IS_DELETED": "N",
+          "USER_PROFILE": "enp6eg==",
+          "META_JSON": "{\"type\": \"date_max\"}",
+          "TAGS": "date,max,boundary",
+          "USER_XML": "<user><id>TC025_DATE_MAX</id></user>",
+          "OPTIONAL_COL": null
+        },
+        {
+          "_comment": "윤년 2월 29일",
+          "USER_ID": "TC025_LEAP",
+          "USER_NAME": "윤년_TC025",
+          "USER_NICK": "LEAP_DAY",
+          "USER_CODE": "CODE_LEAP",
+          "USER_DESC": "윤년 2월 29일 날짜 테스트",
+          "USER_AGE": 29,
+          "USER_COUNT": 1,
+          "USER_BIGINT": 20240229,
+          "USER_SCORE": 29.0229,
+          "USER_RATE": 0.02290000,
+          "USER_RATIO": 2.0229,
+          "USER_WEIGHT": 62.9,
+          "CREATED_DATE": "2024-02-29",
+          "UPDATED_TS": "2024-02-29T12:00:00.000",
+          "UPDATED_TZ": "2024-02-29T12:00:00.000000+09:00",
+          "UPDATED_LTZ": "2024-02-29T12:00:00.000000+09:00",
+          "IS_ACTIVE": "Y",
+          "IS_DELETED": "N",
+          "USER_PROFILE": "QUFBQQ==",
+          "META_JSON": "{\"type\": \"leap_day\", \"year\": 2024}",
+          "TAGS": "leap,date,2024",
+          "USER_XML": "<user><id>TC025_LEAP</id></user>",
+          "OPTIONAL_COL": null
+        }
+      ]
+    }
+  }
+}

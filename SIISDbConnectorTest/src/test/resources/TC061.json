@@ -1,0 +1,15 @@
+{
+    "operations": {
+        "delete_tb_user_v2": null,
+        "insert_tb_user_v2": {
+            "data": [
+                {"USER_ID":"ID_1","USER_NAME":"Orig_1","USER_NICK":"NK1","USER_CODE":"CD1","USER_DESC":"TC061 setup row","USER_AGE":20,"USER_COUNT":1000,"USER_BIGINT":922337203685477580,"USER_SCORE":88.12,"USER_RATE":0.123,"USER_RATIO":1.23,"USER_WEIGHT":75.43,"CREATED_DATE":"2026-01-01","UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"Y","IS_DELETED":"N","USER_PROFILE":"QklOQVJZXzE=","META_JSON":"{\"k\":1}","TAGS":"t1","USER_XML":"<u><id>1</id></u>","OPTIONAL_COL":"TC061"}
+            ]
+        },
+        "update_tb_user_v2": {
+            "data": [
+                {"USER_ID":"ID_99","USER_NAME":"NoMatch","USER_NICK":"NM","USER_CODE":"NM","USER_DESC":"This row does not exist","USER_AGE":0,"USER_COUNT":0,"USER_BIGINT":0,"USER_SCORE":0.0,"USER_RATE":0.0,"USER_RATIO":0.0,"USER_WEIGHT":0.0,"UPDATED_TS":"2026-01-01T00:00:00.000","UPDATED_TZ":"2026-01-01T00:00:00.000+09:00","UPDATED_LTZ":"2026-01-01T00:00:00.000+09:00","IS_ACTIVE":"N","IS_DELETED":"N","META_JSON":"{\"k\":0}","TAGS":"nomatch","USER_XML":"<u><id>99</id></u>","OPTIONAL_COL":"TC061_NOMATCH"}
+            ]
+        }
+    }
+}

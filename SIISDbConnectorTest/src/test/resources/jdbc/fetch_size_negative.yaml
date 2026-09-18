@@ -1,0 +1,14 @@
+# fetch_size 에 음수를 설정한 경우 → 검증 에러 발생해야 함
+api_name: test_fetch_size_negative
+target_system_key: TEST
+target_jndi_name: jdbc/TEST
+operations:
+  - operation_name: select_op
+    action_type: SELECT
+    data_record: data
+    fetch_size: -100
+    sql: |
+      SELECT USER_ID FROM TB_USER WHERE STATUS = :STATUS
+    fields:
+      - { data_field: STATUS,  param: STATUS,  type: STRING, direction: IN }
+      - { data_field: USER_ID, param: USER_ID, type: STRING }
