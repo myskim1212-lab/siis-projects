@@ -163,6 +163,7 @@ const Registry = (() => {
     if (st && st.expanded) { st.items = null; loadChildren(parent); }
   }
 
+  // "새로고침" 버튼 등 명시적 액션에서만 쓴다 — 루트를 펼치고 곧바로 조회 API를 부른다.
   function resetTree() {
     treeState = {};
     selectedLeafPath = null;
@@ -170,6 +171,17 @@ const Registry = (() => {
     const root = getNodeState(TREE_ROOT);
     root.expanded = true;
     loadChildren(TREE_ROOT);
+  }
+
+  // 인스턴스 선택만 바뀌었을 때 쓴다 — 이전 트리 상태만 비우고 API는 부르지 않는다
+  // (트리는 접힌 채로 남아, 루트를 펼치거나 "새로고침"을 눌러야 실제 조회가 나간다).
+  // 좌측 트리 클릭이 모든 탭에 tree-node-selected로 방송되는데, 예전엔 이 함수가 매번
+  // list_registry_resources를 호출해서 Registry 탭을 보고 있지 않을 때도 MI 관리 API가
+  // 불필요하게 호출되고, 그 응답이 늦으면 재시작 등 다른 탭의 명령이 밀리는 문제가 있었다.
+  function clearTreeState() {
+    treeState = {};
+    selectedLeafPath = null;
+    renderTree();
   }
 
   function applyInstance(inst) {
@@ -180,7 +192,7 @@ const Registry = (() => {
     document.getElementById('registry-search').value = '';
     treeFilter = '';
     clearSearchResults();
-    resetTree();
+    clearTreeState();
   }
 
   /* 좌측 트리에서 서버그룹/서버/그룹/인스턴스 중 무엇을 클릭하든 그 깊이까지 4단

@@ -514,8 +514,8 @@ def delete_group(group_id: int):
 
 # ── Instance ─────────────────────────────────────────────────────────────────
 
-# 인스턴스의 OS SSH 접속 정보는 더 이상 instance 테이블 자체에 저장하지 않고(컬럼은
-# 하위호환을 위해 남아있지만 더 이상 쓰이지 않는다), 소속 서버(instance.group_id ->
+# 인스턴스의 OS SSH 접속 정보는 instance 테이블 자체에 저장하지 않고(컬럼은 하위호환을
+# 위해 남아있지만 더 이상 쓰이지 않는다), 소속 서버(instance.group_id ->
 # instance_group.server_id -> server)의 값을 조회 시점에 함께 읽어와 Instance 객체에
 # 그대로 반영해준다 — Instance를 그대로 쓰던 restart/log 서비스 쪽 코드를 바꾸지 않아도
 # 되도록 하기 위함이다. instance_group.server_id가 비어있는(예전 구조에서 넘어온) 고아
@@ -584,9 +584,9 @@ def get_instance(instance_id: int) -> Optional[Instance]:
 
 
 def save_instance(inst: Instance) -> Instance:
-    # OS SSH 접속 정보는 더 이상 인스턴스에 저장하지 않는다(서버 단위로 이동, save_server
-    # 참고) — instance 테이블의 ssh_* 컬럼은 하위호환을 위해 남아있지만 여기서 더 이상
-    # 쓰지 않으므로 이 INSERT/UPDATE에도 포함하지 않는다.
+    # OS SSH 접속 정보는 인스턴스에 저장하지 않는다(서버 단위로 관리, save_server 참고)
+    # — instance 테이블의 ssh_* 컬럼은 하위호환을 위해 남아있지만 여기서 더 이상 쓰지
+    # 않으므로 이 INSERT/UPDATE에도 포함하지 않는다.
     fields = (inst.group_id, inst.name, inst.host, inst.port, inst.service_port, inst.base_path, inst.lib_path,
                inst.sequence_path, inst.jdbc_registry_path, inst.type, inst.product, inst.version, inst.environment,
                inst.admin_user, inst.admin_pass,
