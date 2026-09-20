@@ -1,0 +1,12 @@
+# 실제 운영 데이터 — 인스턴스 접속정보(admin/SSH 비밀번호 평문 포함), 고객사명 등
+# 민감정보가 들어있어 절대 커밋하지 않는다.
+/data/
+*.db
+mgmt_backup_*.db
+
+# Python
+__pycache__/
+*.pyc
+
+# 소스가 아닌 벤더 바이너리(오프라인 설치용 wheel) — requirements.txt가 진짜 소스.
+/vendor/wheels/

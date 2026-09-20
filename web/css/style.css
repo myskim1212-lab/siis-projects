@@ -1,0 +1,778 @@
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --border: #dde3ea;
+  --text: #1e2530;
+  --text-muted: #6b7684;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --info: #0891b2;
+  --info-hover: #0e7490;
+  --purple: #7c3aed;
+  --purple-hover: #6d28d9;
+  --up: #16a34a;
+  --down: #dc2626;
+  --warn: #b45309;
+  --error: #dc2626;
+  --muted-line: #6b7684;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Malgun Gothic", "맑은 고딕", "Segoe UI", Arial, sans-serif;
+  font-size: 13px;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.topbar-title { font-weight: 700; font-size: 15px; }
+.topbar-status { color: var(--text-muted); font-size: 12px; }
+
+.main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+#instance-panel {
+  width: 420px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 8px;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tree-search {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12.5px;
+  background: #fff;
+}
+.tree-search:focus { outline: none; border-color: var(--primary); }
+
+/* 서버그룹 헤더의 UP/DOWN 요약 배지 — 그 서버그룹 안에서 접속 테스트를 한 번이라도
+   해본 인스턴스가 있을 때만 표시된다(전부 미확인이면 빈 채로 둠). */
+.sg-status-badge {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 1px 8px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.sg-status-badge:empty { display: none; }
+.sg-status-badge.sg-status-ok { background: #d9f4e3; color: var(--up); }
+.sg-status-badge.sg-status-warn { background: #fde4ea; color: var(--down); }
+
+.tree-empty { padding: 16px 10px; text-align: center; }
+
+.monitor-health-reasons { margin: 4px 0 0; padding-left: 18px; font-size: 12px; color: var(--text-muted); }
+.monitor-health-reasons li { margin-bottom: 2px; }
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 10px;
+}
+.chart-box {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 8px;
+  background: var(--bg);
+}
+.chart-label { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+.chart-value { font-weight: 700; color: var(--text); font-size: 13px; }
+.chart-svg { width: 100%; height: 60px; display: block; }
+.chart-caption { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
+
+/* 모니터링 — 서버그룹/그룹 단위로 선택한 모든 인스턴스를 격자로 한 화면에 표시.
+ * 인스턴스 개수(density-*)에 따라 카드 너비와 담기는 정보량이 달라진다. */
+.monitor-summary { min-height: 22px; }
+.monitor-count-pill {
+  display: inline-flex; align-items: center;
+  padding: 2px 9px; border-radius: 100px; font-size: 11px; font-weight: 700;
+  background: #eef1f6; color: var(--text-muted);
+}
+.monitor-count-pill.ok { background: #e7f7ec; color: var(--up); }
+.monitor-count-pill.warn { background: #fdf3e0; color: var(--warn); }
+.monitor-count-pill.critical { background: #fdeaea; color: var(--down); }
+
+.monitor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  grid-auto-rows: min-content;
+  gap: 12px;
+  align-content: start;
+  overflow-y: auto;
+}
+.monitor-grid.density-compact { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.monitor-grid.density-mini { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+
+.monitor-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.monitor-card.highlighted { outline: 2px solid var(--primary); }
+.monitor-card.unsupported { opacity: .65; }
+.monitor-card-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.monitor-card-name { font-weight: 700; font-size: 13.5px; }
+.monitor-card .table-wrap { max-height: 120px; }
+.monitor-card.full .table-wrap { max-height: 200px; }
+.monitor-card table { font-size: 11.5px; }
+
+/* compact 카드(3~8개 구간)는 2행 그리드에 꽉 채워지므로, 스크롤 없이 한 화면에
+   들어오도록 차트/표 높이를 좀 더 압축한다(추이 그래프는 최소/최대 캡션을 생략
+   하고 선 그래프만 남겨 높이를 줄인다). */
+.monitor-card.compact { padding: 6px 10px; gap: 3px; }
+.monitor-card.compact .table-wrap { max-height: 62px; }
+.monitor-card.compact .chart-box { padding: 3px 6px; }
+.monitor-card.compact .chart-svg { height: 32px; }
+.monitor-card.compact .chart-label { margin-bottom: 0; }
+.monitor-card.compact .chart-caption { display: none; }
+
+/* 인스턴스를 2개 이상 같이 볼 때 JNDI/장시간 스레드 정보를 옮겨두는 상세보기 진입점.
+   mini 카드는 버튼 대신 한 줄짜리 링크 텍스트로 표시해 높이를 아낀다. */
+.monitor-detail-link {
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 600;
+}
+.monitor-detail-link:hover { text-decoration: underline; }
+.modal-body .table-wrap { max-height: 240px; }
+
+.monitor-status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; flex-shrink: 0; }
+.monitor-status-dot.ok { background: var(--up); }
+.monitor-status-dot.warning { background: var(--warn); }
+.monitor-status-dot.critical { background: var(--down); }
+.monitor-status-dot.unknown { background: #b8c0cc; }
+
+.monitor-bar { height: 6px; border-radius: 4px; background: var(--bg); overflow: hidden; }
+.monitor-bar-fill { height: 100%; background: var(--up); }
+.monitor-bar-fill.warn { background: var(--warn); }
+.monitor-bar-fill.critical { background: var(--down); }
+
+.tree-header {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px 4px 26px;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 11px;
+  border-bottom: 1px solid var(--border);
+}
+.tree-header .col-name { flex: 1; }
+.tree-header .col-env { width: 30px; }
+.tree-header .col-type { width: 50px; }
+.tree-header .col-status { width: 34px; text-align: right; }
+
+.tree {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 서버그룹 — 최상위 계층. "서버그룹별로 구분될 수 있도록" 각 서버그룹을 테두리 있는
+   독립된 영역(카드)으로 감싸서 다른 서버그룹과 뚜렷하게 분리해 보여준다. */
+.tree-server-group {
+  margin: 10px 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fbfcfe;
+}
+.tree-server-group:first-child { margin-top: 4px; }
+.tree-server-group-header {
+  padding: 8px 10px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #eef1f6;
+  border-bottom: 1px solid var(--border);
+}
+.tree-server-group-header:hover { background: #e3e7ee; }
+.tree-server-group-header.selected { background: #dbeafe; }
+.tree-icon { flex-shrink: 0; font-size: 12px; line-height: 1; }
+
+/* 서버그룹 헤더의 "전체 펼치기/접기" 버튼 — 그 서버그룹 아래 서버/그룹을 화살표로
+   하나씩 펼치지 않고 한 번에 펼치거나 접는다. 항상 헤더 오른쪽 끝에 붙도록
+   margin-left:auto로 밀어둔다. */
+.tree-expand-all-btn {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+.tree-expand-all-btn:hover { background: #eef1f6; color: var(--text); border-color: var(--primary); }
+
+/* 서버그룹>서버>그룹>인스턴스 각 단계를 접고 펼치는 토글 화살표. 클릭 영역을
+   넉넉히 잡아 마우스로 누르기 쉽게 하고, 자체 너비를 고정해 화살표 유무와
+   무관하게 그 옆의 아이콘/이름이 항상 같은 위치에서 시작하도록 한다. */
+.tree-toggle {
+  flex-shrink: 0;
+  width: 14px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 10px;
+  cursor: pointer;
+}
+.tree-toggle:hover { color: var(--text); }
+
+.tree-server {
+  display: flex;
+  align-items: center;
+  padding: 5px 8px 5px 10px;
+  cursor: pointer;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 12.5px;
+}
+.tree-server:hover { background: #eef1f6; }
+.tree-server.selected { background: #dbeafe; }
+.tree-server .hint { font-weight: 500; }
+
+.tree-group {
+  display: flex;
+  align-items: center;
+  padding: 5px 8px 5px 24px;
+  cursor: pointer;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.tree-group:hover { background: #eef1f6; }
+.tree-group.selected { background: #dbeafe; color: var(--text); }
+/* 인스턴스를 드래그해서 이 그룹 위로 올렸을 때(다른 그룹으로 복사) 놓을 수
+   있는 위치임을 보여주는 강조 표시. */
+.tree-group.drop-target { background: #dbeafe; outline: 2px dashed var(--primary); outline-offset: -2px; }
+
+.tree-instance {
+  display: flex;
+  align-items: center;
+  /* .tree-group은 토글 화살표(14px)+gap(6px)만큼 아이콘이 padding-left보다 더 밀려서
+     시작하는데(24+14+6=44px), 인스턴스는 토글이 없어 아이콘이 padding-left에서 바로
+     시작한다. 그래서 단순히 group보다 큰 padding-left만 주면(예: 38px) 실제 아이콘
+     위치는 오히려 group(44px)보다 얕아져(38px) 두 계층이 구분 안 되는 문제가 있었다 —
+     server→group 사이의 들여쓰기 폭(14px)만큼 더 깊게 58px로 맞춘다. */
+  padding: 6px 8px 6px 58px;
+  cursor: grab;
+  gap: 6px;
+}
+.tree-instance:hover { background: #eef1f6; }
+.tree-instance.selected { background: #dbeafe; }
+.tree-instance .col-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tree-instance .col-env { width: 30px; font-size: 11px; font-weight: 700; }
+.tree-instance .col-type { width: 50px; font-size: 11px; font-weight: 700; }
+.tree-instance .col-status { width: 34px; text-align: right; font-weight: 700; }
+.status-up { color: var(--up); }
+.status-down { color: var(--down); }
+.env-dev { color: var(--text-muted); }
+.env-prod { color: var(--danger); }
+.env-both { color: var(--warn); }
+
+.env-badge { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.env-badge.env-dev { color: var(--text-muted); background: #eef1f6; }
+.env-badge.env-prod { color: #fff; background: var(--danger); }
+.env-badge.env-both { color: #fff; background: var(--warn); }
+
+#tab-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 10px 14px;
+  gap: 10px;
+}
+
+.tabbar {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+  border: none;
+  background: transparent;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+.tab-panel {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.tab-panel.active { display: flex; }
+
+.box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.grow { flex: 1 1 auto; min-height: 0; }
+
+/* 여러 인스턴스 테스트 섹션 — 입력칸/설명/필터 행이 각자 별개 블록이라 사이 간격이
+   없어 너무 붙어 보이던 문제 — .box와 같은 8px 간격을 준다. */
+#ds-multi-body { display: flex; flex-direction: column; gap: 8px; }
+.box.grow { flex: 1 1 auto; min-height: 140px; }
+.box-title { font-weight: 700; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; }
+.hint { font-size: 11.5px; color: var(--text-muted); }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.filter-row { padding: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+
+.hidden { display: none !important; }
+
+/* 배포 탭 — 여러 파일을 한꺼번에 선택했을 때 각 파일을 칩 하나씩으로 보여준다 */
+.file-chip-list { display: flex; flex-wrap: wrap; gap: 6px; min-height: 28px; align-items: center; }
+.file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 10px;
+  border-radius: 100px;
+  background: #eef4ff;
+  border: 1px solid #cfe0fb;
+  font-size: 12px;
+}
+.file-chip-name { color: var(--primary); font-weight: 700; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-chip-remove {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-weight: 700;
+  padding: 0 4px;
+  border-radius: 50%;
+  line-height: 1.4;
+}
+.file-chip-remove:hover { background: #dbe6fd; color: var(--danger); }
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.type-badge.type-car { background: #dbe6fd; color: var(--primary); }
+.type-badge.type-sequence { background: #ede4fb; color: var(--purple); }
+.type-badge.type-jar { background: #d7f0f4; color: var(--info); }
+.type-badge.type-unknown { background: #fdecd2; color: var(--warn); }
+
+/* 인스턴스 타입별 글자색 — 트리/배포/재시작 목록에서 한눈에 구분되도록.
+ * MI 계열은 청록 계통, APIM 계열은 보라/주황 계통으로 두 제품군이 먼저
+ * 구분되고, 그 안에서 세부 타입(AIO/Manager/Runtime/Gateway)이 갈린다. */
+.type-color-mi-aio { color: #2563eb; }
+.type-color-mi-mgr { color: #0891b2; }
+.type-color-mi-run { color: #0d9488; }
+.type-color-apim-aio { color: #7c3aed; }
+.type-color-apim-mgr { color: #c026d3; }
+.type-color-apim-gw { color: #c2410c; }
+
+.checklist {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fbfcfe;
+  /* overflow:auto가 있으면 flexbox는 "자동 최소 높이"를 콘텐츠 크기가 아니라 0으로
+     취급한다 — 그래서 같은 flex 컨테이너 안의 형제 요소(예: 접속 테스트 결과 테이블)가
+     긴 URL 등으로 커지면 이 체크리스트가 실제로는 행이 있는데도 0px로 짜부라져
+     화면에서 완전히 사라져버렸다(체크 상태 자체는 DOM에 남아있어 "전체 선택" 같은
+     동작은 되는데, 눈에는 아무것도 안 보이는 원인이었다). 최소 높이를 명시해서 항상
+     몇 줄은 보이게 고정한다. */
+  min-height: 100px;
+}
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #eef1f6;
+  cursor: pointer;
+}
+.checklist-item:last-child { border-bottom: none; }
+.checklist-item:hover { background: #eef1f6; }
+/* 인스턴스 선택 드롭다운(또는 좌측 트리 클릭)으로 "지금 보고 있는" 인스턴스를 표시 —
+   체크 여부와 무관하게 목록에서 위치만 강조한다. */
+.checklist-item-highlighted { background: #fff7d6; border-left: 3px solid var(--warn); padding-left: 7px; }
+.checklist-item-highlighted:hover { background: #fdf0b8; }
+
+.btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.btn:hover { background: #eef1f6; }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.btn:disabled:hover { background: var(--surface); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+
+.btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 700; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn-danger:hover { background: var(--danger-hover); }
+.btn-info { background: var(--info); border-color: var(--info); color: #fff; font-weight: 700; }
+.btn-info:hover { background: var(--info-hover); }
+.btn-purple { background: var(--purple); border-color: var(--purple); color: #fff; font-weight: 700; }
+.btn-purple:hover { background: var(--purple-hover); }
+
+.input-sm {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 13px;
+  width: 80px;
+}
+select.file-select { width: 280px; }
+
+.log-area {
+  height: 170px;
+  flex-shrink: 0;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fbfcfe;
+  color: var(--text);
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  padding: 8px;
+}
+/* 배포 탭 로그는 아래 배포 이력 검색 박스에 공간을 더 내주기 위해 약 40% 축소
+   (재시작 탭의 공용 .log-area 높이는 그대로 유지) */
+#deploy-log { height: 100px; }
+#registry-content { flex: 1 1 auto; height: auto; min-height: 120px; }
+.registry-tree {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fbfcfe;
+}
+.registry-tree-row {
+  padding: 3px 8px;
+  cursor: pointer;
+  font-family: Consolas, monospace;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+.registry-tree-row:hover { background: #eef1f6; }
+.registry-tree-row.is-dir { font-weight: 700; }
+.registry-tree-row.is-leaf-selected { background: #dbeafe; }
+
+.subtabbar {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+}
+.subtab-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.subtab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #eef4ff; }
+.subtab-close { color: var(--text-muted); font-weight: 700; }
+.subtab-close:hover { color: var(--danger); }
+
+#log-panels {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+}
+
+.log-panel {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+}
+.log-panel.active { display: flex; }
+
+/* 바둑판(그리드) 보기 — 열려있는 모든 로그 탭을 동시에 표시 */
+#log-panels.grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-auto-rows: minmax(220px, 1fr);
+  gap: 10px;
+  overflow-y: auto;
+}
+#log-panels.grid-view .log-panel {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px;
+  min-height: 0;
+}
+#log-panels.grid-view .log-panel.active { outline: 2px solid var(--primary); }
+
+.log-console {
+  flex: 1;
+  overflow-y: auto;
+  background: #10151f;
+  color: #e2e8f0;
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  border-radius: 6px;
+  padding: 8px 10px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  user-select: text;
+}
+.log-line { line-height: 1.5; }
+.log-line.lvl-error { color: #f87171; }
+.log-line.lvl-warn { color: #facc15; }
+.log-line.lvl-info { color: #e2e8f0; }
+.log-line.lvl-other { color: #94a3b8; }
+
+.table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+thead th {
+  position: sticky; top: 0;
+  background: #f0f3f8;
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+}
+tbody td { padding: 7px 10px; border-bottom: 1px solid #eef1f6; }
+tbody tr:nth-child(even) { background: #fafbfd; }
+tbody tr:hover { background: #eef4ff; }
+.result-success { color: var(--up); font-weight: 700; }
+.result-failed { color: var(--down); font-weight: 700; }
+.result-partial { color: var(--warn); font-weight: 700; }
+.ds-status-cell { cursor: pointer; }
+tbody tr.row-selected, tbody tr.row-selected:hover { background: #dbeafe; }
+
+.split-cols { display: flex; gap: 16px; align-items: flex-start; }
+.split-cols > div { flex: 1; min-width: 0; }
+
+/* ── 모달 ─────────────────────────────────────────────────────────── */
+
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(20, 26, 36, .45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  background: var(--surface);
+  border-radius: 10px;
+  width: 480px;
+  max-width: 92vw;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+}
+/* 사용자가 직접 크기를 조절할 수 있는 모달(예: 모니터링 상세보기) — 기본 크기를
+   openModal(width, {height, resizable:true})로 크게 잡아주고, 여기서는 늘리거나
+   줄일 수 있는 한계값만 정한다. */
+.modal.modal-resizable {
+  min-width: 480px;
+  min-height: 360px;
+  max-width: 96vw;
+  max-height: 94vh;
+  display: flex;
+  flex-direction: column;
+}
+/* 헤더/푸터는 고정하고, 본문만 늘어난 만큼 커지면서 스스로 스크롤되게 한다 —
+   그래야 세로로 크게 늘렸을 때 실제로 더 많은 내용이 보인다. */
+.modal.modal-resizable .modal-header,
+.modal.modal-resizable .modal-footer { flex-shrink: 0; }
+.modal.modal-resizable .modal-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.modal-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.modal-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+/* flex column의 자식은 기본 min-width:auto라 안의 텍스트가 길면(예: 확장자 붙은
+   파일명처럼 공백 없는 긴 토큰) 줄어들지 못하고 모달 폭을 넘어가 가로 스크롤이
+   생긴다 — 배포 확인창에서 파일명이 잘려 보이던 문제의 원인. 자식 전체를 폭에
+   맞춰 줄어들 수 있게 하고, 긴 토큰은 필요하면 단어 중간에서라도 줄바꿈한다. */
+.modal-body > * { min-width: 0; }
+.modal-body { overflow-wrap: break-word; word-break: break-word; }
+.modal-footer {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end; gap: 8px;
+}
+.field-group {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px 12px;
+}
+.field-group-title { font-weight: 700; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .03em; }
+.field-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.field-row:last-child { margin-bottom: 0; }
+.field-row label { width: 130px; flex-shrink: 0; color: var(--text-muted); font-size: 12.5px; }
+.field-row input[type=text], .field-row input[type=password], .field-row input[type=number], .field-row select {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+.field-row .detail-value {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  word-break: break-all;
+  user-select: text;
+}
+.field-row.disabled { opacity: .45; pointer-events: none; }
+
+/* ── 운영(PROD) 경고 모달 ─────────────────────────────────────────── */
+.modal-danger {
+  border: 2px solid var(--danger);
+  animation: dangerPulse 1.4s ease-in-out infinite;
+}
+@keyframes dangerPulse {
+  0%, 100% { box-shadow: 0 20px 60px rgba(0,0,0,.25), 0 0 0 0 rgba(220,38,38,.55); }
+  50% { box-shadow: 0 20px 60px rgba(0,0,0,.25), 0 0 0 9px rgba(220,38,38,0); }
+}
+.danger-header { color: var(--danger); font-size: 15.5px; }
+.danger-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: #7f1d1d;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.danger-instance-list { font-weight: 700; margin: 6px 0; color: var(--danger); }
+
+/* ── 배포/재시작 확인창 — 작업/대상을 명확히 분리 ──────────────────────── */
+.confirm-detail { font-size: 13px; color: var(--text-muted); }
+.confirm-summary { font-size: 12.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .02em; }
+.confirm-group-list { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; }
+.confirm-group { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; background: #fbfcfe; }
+.confirm-group-name { font-weight: 700; font-size: 12.5px; margin-bottom: 6px; }
+.confirm-inst-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.confirm-inst-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 3px 8px 3px 4px; border-radius: 12px; background: #eef1f6; }
+
+.toast-stack {
+  position: fixed; bottom: 16px; right: 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  z-index: 2000;
+}
+.toast {
+  background: #1e2530; color: #fff;
+  padding: 10px 14px; border-radius: 8px;
+  font-size: 12.5px; box-shadow: 0 6px 20px rgba(0,0,0,.25);
+  max-width: 360px;
+}
+.toast.error { background: var(--danger); }
+.toast.success { background: var(--up); }
+
+/* ── 우클릭 컨텍스트 메뉴 ─────────────────────────────────────────── */
+
+.context-menu {
+  position: fixed;
+  z-index: 2000;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+  padding: 4px;
+  min-width: 140px;
+}
+.context-menu-item {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.context-menu-item:hover { background: #eef1f6; }
+.context-menu-item.danger { color: var(--danger); }
+.context-menu-item.danger:hover { background: #fee2e2; }
