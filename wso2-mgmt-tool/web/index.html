@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>WSO2 Management Tool</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <span class="topbar-title">WSO2 Management Tool</span>
+    <span class="topbar-status" id="status-bar">준비</span>
+  </header>
+
+  <div class="main">
+    <aside id="instance-panel">
+      <div class="toolbar">
+        <button id="btn-add" class="btn btn-sm">+ 추가 ▾</button>
+        <button id="btn-edit" class="btn btn-sm">수정</button>
+        <button id="btn-delete" class="btn btn-sm">삭제</button>
+        <button id="btn-test" class="btn btn-sm">연결 테스트</button>
+        <button id="btn-more" class="btn btn-sm">⋯ 더보기</button>
+      </div>
+      <div class="row tree-search-row">
+        <input id="tree-search" type="text" class="tree-search" placeholder="🔍 이름으로 찾기...">
+      </div>
+      <div class="tree-header">
+        <span class="col-name">이름</span>
+        <span class="col-env">환경</span>
+        <span class="col-type">타입</span>
+        <span class="col-status">상태</span>
+      </div>
+      <div id="instance-tree" class="tree"></div>
+    </aside>
+
+    <section id="tab-area">
+      <nav class="tabbar">
+        <button class="tab-btn active" data-tab="deploy">배포</button>
+        <button class="tab-btn" data-tab="restart">재시작/정지</button>
+        <button class="tab-btn" data-tab="datasources">데이터소스</button>
+        <button class="tab-btn" data-tab="registry">레지스트리</button>
+        <button class="tab-btn" data-tab="logs">로그 뷰어</button>
+        <button class="tab-btn" data-tab="monitor">모니터링</button>
+        <button class="tab-btn" data-tab="audit">감사 로그</button>
+      </nav>
+
+      <div class="tab-panel active" id="tab-deploy">
+        <div class="box">
+          <div class="box-title">배포 파일 (여러 개 선택 가능)</div>
+          <div class="row">
+            <button id="btn-browse-file" class="btn">파일 선택...</button>
+            <button id="btn-clear-files" class="btn btn-sm hidden">전체 지우기</button>
+          </div>
+          <div id="deploy-file-list" class="file-chip-list">
+            <span class="hint">선택된 파일 없음</span>
+          </div>
+          <div class="hint">.car는 Management API로, .jar/시퀀스는 SSH/SFTP로 인스턴스의 lib·시퀀스 경로에
+            배포됩니다. 여러 파일을 선택하면 각 파일이 아래에서 선택한 모든 인스턴스에 배포됩니다.</div>
+          <div class="row">
+            <label for="deploy-reason" style="width:70px">배포 사유</label>
+            <input id="deploy-reason" type="text" placeholder="예: SIISDbConnector 버그 수정 반영 (선택 입력)" style="flex:1" />
+          </div>
+        </div>
+        <div class="box">
+          <div class="box-title">대상 인스턴스 (다중 선택 가능)</div>
+          <div class="hint">Gateway / Runtime 노드는 배포 대상에서 제외됩니다. 좌측 트리에서 클릭하면 아래 필터가
+            그 인스턴스 위치로 자동 맞춰지고 목록에서 강조됩니다(체크 여부와는 무관) — 필터는 직접 바꿀 수도 있습니다.</div>
+          <div class="row">
+            <label for="deploy-server-group-filter" style="width:60px">서버그룹</label>
+            <select id="deploy-server-group-filter" style="flex:1"><option value="">전체 서버그룹</option></select>
+            <label for="deploy-server-type-filter" style="width:60px">서버타입</label>
+            <select id="deploy-server-type-filter" style="flex:0.7">
+              <option value="">전체</option>
+              <option value="DEV">개발</option>
+              <option value="PROD">운영</option>
+              <option value="BOTH">운영개발</option>
+            </select>
+            <label for="deploy-server-filter" style="width:40px">서버</label>
+            <select id="deploy-server-filter" style="flex:1"><option value="">전체 서버</option></select>
+            <label for="deploy-group-filter" style="width:40px">그룹</label>
+            <select id="deploy-group-filter" style="flex:1"><option value="">전체 그룹</option></select>
+            <button id="deploy-select-all" class="btn btn-sm">전체 선택</button>
+            <button id="deploy-select-none" class="btn btn-sm">선택 해제</button>
+          </div>
+          <div id="deploy-instance-list" class="checklist" style="max-height:180px"></div>
+          <div id="deploy-checked-summary" class="hint"></div>
+        </div>
+        <div class="box" id="undeploy-section" style="display:none">
+          <div class="box-title">삭제 대상 조회</div>
+          <div class="hint">대상 인스턴스에서 체크한 인스턴스 중 하나를 골라 실제 배포된 CAR / lib JAR / 시퀀스 목록을 조회하고, 삭제할 항목을 클릭해 선택하세요.</div>
+          <div class="row">
+            <label for="undeploy-ref-instance" style="width:90px">조회 인스턴스</label>
+            <select id="undeploy-ref-instance" style="flex:1"></select>
+            <button id="btn-undeploy-refresh" class="btn btn-sm">새로고침</button>
+          </div>
+          <div class="row split-cols">
+            <div>
+              <div class="hint">배포된 CAR 앱</div>
+              <div class="table-wrap" style="max-height:150px">
+                <table id="undeploy-car-table">
+                  <thead><tr><th>이름</th><th>버전</th><th>상태</th></tr></thead>
+                  <tbody><tr><td colspan="3" class="hint">조회 인스턴스를 선택하세요.</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+            <div>
+              <div class="hint">lib JAR 파일</div>
+              <div class="table-wrap" style="max-height:150px">
+                <table id="undeploy-jar-table">
+                  <thead><tr><th>파일명</th><th>크기</th><th>수정일</th></tr></thead>
+                  <tbody><tr><td colspan="3" class="hint">조회 인스턴스를 선택하세요.</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+            <div>
+              <div class="hint">시퀀스 파일</div>
+              <div class="table-wrap" style="max-height:150px">
+                <table id="undeploy-sequence-table">
+                  <thead><tr><th>파일명</th><th>크기</th><th>수정일</th></tr></thead>
+                  <tbody><tr><td colspan="3" class="hint">조회 인스턴스를 선택하세요.</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <span id="undeploy-target-label" class="hint">선택된 삭제 대상: 없음</span>
+            <button id="btn-undeploy" class="btn btn-danger">삭제</button>
+          </div>
+        </div>
+        <div class="row">
+          <button id="btn-deploy" class="btn btn-primary">배포</button>
+          <button id="btn-undeploy-toggle" class="btn btn-sm">삭제 기능 활성화</button>
+          <button id="btn-deploy-view-logs" class="btn btn-sm">로그 보기</button>
+        </div>
+        <textarea id="deploy-log" class="log-area" readonly></textarea>
+
+        <div class="box">
+          <div class="box-title">배포 이력 검색</div>
+          <div class="row">
+            <input id="dh-search-file" type="text" placeholder="파일명 검색" style="flex:1;min-width:120px" />
+            <input id="dh-search-reason" type="text" placeholder="사유 검색" style="flex:1;min-width:120px" />
+            <label>시작일</label><input id="dh-search-from" type="date" />
+            <label>종료일</label><input id="dh-search-to" type="date" />
+            <button id="btn-dh-search" class="btn btn-sm">검색</button>
+          </div>
+          <div class="table-wrap" style="max-height:220px">
+            <table id="dh-table">
+              <thead><tr><th>배포일시</th><th>인스턴스</th><th>파일</th><th>타입</th><th>결과</th><th>사유</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-restart">
+        <div class="box">
+          <div class="box-title">대상 인스턴스</div>
+          <div class="hint">좌측 트리에서 클릭하면 아래 필터가 그 인스턴스 위치로 자동 맞춰지고 목록에서
+            강조됩니다(체크 여부와는 무관) — 필터는 직접 바꿀 수도 있습니다.</div>
+          <div class="row">
+            <label for="restart-server-group-filter" style="width:60px">서버그룹</label>
+            <select id="restart-server-group-filter" style="flex:1"><option value="">전체 서버그룹</option></select>
+            <label for="restart-server-type-filter" style="width:60px">서버타입</label>
+            <select id="restart-server-type-filter" style="flex:0.7">
+              <option value="">전체</option>
+              <option value="DEV">개발</option>
+              <option value="PROD">운영</option>
+              <option value="BOTH">운영개발</option>
+            </select>
+            <label for="restart-server-filter" style="width:40px">서버</label>
+            <select id="restart-server-filter" style="flex:1"><option value="">전체 서버</option></select>
+            <label for="restart-group-filter" style="width:40px">그룹</label>
+            <select id="restart-group-filter" style="flex:1"><option value="">전체 그룹</option></select>
+            <button id="restart-select-all" class="btn btn-sm">전체 선택</button>
+            <button id="restart-select-none" class="btn btn-sm">선택 해제</button>
+          </div>
+          <div id="restart-instance-list" class="checklist" style="max-height:180px"></div>
+          <div id="restart-checked-summary" class="hint"></div>
+        </div>
+        <div class="row">
+          <label for="restart-method" style="width:70px">실행 방식</label>
+          <select id="restart-method">
+            <option value="">자동 (SSH 설정되어 있으면 SSH, 아니면 API)</option>
+            <option value="API">API 방식 (Management API)</option>
+            <option value="SSH">SSH 방식 (wso2server.sh)</option>
+          </select>
+        </div>
+        <div class="row">
+          <button id="btn-restart-graceful" class="btn btn-info">Graceful 재시작</button>
+          <button id="btn-shutdown-graceful" class="btn btn-purple">Graceful 정지</button>
+          <button id="btn-restart-force" class="btn btn-primary">강제 재시작</button>
+          <button id="btn-shutdown-force" class="btn btn-danger">강제 정지</button>
+          <button id="btn-restart-view-logs" class="btn btn-sm">로그 보기</button>
+        </div>
+        <textarea id="restart-log" class="log-area" readonly></textarea>
+
+        <div class="box">
+          <div class="box-title">재시작/정지 이력</div>
+          <div class="row">
+            <label for="rh-search-instance" style="width:90px">인스턴스</label>
+            <select id="rh-search-instance" style="flex:1"><option value="">전체</option></select>
+            <label>시작일</label><input id="rh-search-from" type="date" />
+            <label>종료일</label><input id="rh-search-to" type="date" />
+            <button id="btn-rh-search" class="btn btn-sm">검색</button>
+            <button id="btn-rh-clear" class="btn btn-sm btn-danger">이력 초기화</button>
+          </div>
+          <div class="table-wrap" style="max-height:220px">
+            <table id="rh-table">
+              <thead><tr><th>시간</th><th>인스턴스</th><th>구분</th><th>결과</th><th>상세</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-datasources">
+        <div class="row">
+          <label for="ds-sg-select" style="width:60px">서버그룹</label>
+          <select id="ds-sg-select" style="flex:1"></select>
+          <label for="ds-type-select" style="width:60px">서버타입</label>
+          <select id="ds-type-select" style="flex:0.7">
+            <option value="">전체</option>
+            <option value="DEV">개발</option>
+            <option value="PROD">운영</option>
+            <option value="BOTH">운영개발</option>
+          </select>
+          <label for="ds-server-select" style="width:40px">서버</label>
+          <select id="ds-server-select" style="flex:1"></select>
+          <label for="ds-group-select" style="width:40px">그룹</label>
+          <select id="ds-group-select" style="flex:1"></select>
+          <label for="ds-instance-select" style="width:60px">인스턴스</label>
+          <select id="ds-instance-select" style="flex:1.5"></select>
+        </div>
+        <div class="row">
+          <span id="ds-instance-label" class="hint">좌측에서 인스턴스를 선택하세요.</span>
+          <button id="btn-ds-refresh" class="btn btn-sm">새로고침</button>
+          <button id="btn-ds-clear-jndi-cache" class="btn btn-sm">JNDI 캐시 초기화</button>
+          <button id="btn-ds-ei-add" class="btn btn-sm btn-primary" style="display:none">데이터소스 등록</button>
+        </div>
+        <div class="hint" id="ds-ei-hint" style="display:none">EI 6.1 인스턴스는 Carbon SOAP 관리 웹서비스(NDataSourceAdmin)로 데이터소스를
+          등록/조회/수정/삭제합니다 — 이름을 클릭하면 수정, "관리" 열에서 삭제할 수 있습니다.</div>
+        <div class="row">
+          <select id="ds-search-field" style="width:110px">
+            <option value="name">데이터소스명</option>
+            <option value="jndi">JNDI 이름</option>
+            <option value="description">설명</option>
+          </select>
+          <input id="ds-search" type="text" placeholder="검색어 (,로 구분, 비우면 전체)" style="flex:1;min-width:200px" />
+          <button id="btn-ds-search" class="btn btn-sm">검색</button>
+          <button id="btn-ds-search-clear" class="btn btn-sm">전체 목록</button>
+        </div>
+        <div class="hint" id="ds-search-hint">데이터소스명은 서버에서 바로 검색되어 빠르고, JNDI 이름/설명은 전체 목록을 받아와
+          하나씩 조회하며 걸러내므로 데이터소스 개수가 많으면 다소 시간이 걸릴 수 있습니다.</div>
+        <div class="row">
+          <button id="btn-ds-select-all" class="btn btn-sm">전체 선택</button>
+          <button id="btn-ds-select-none" class="btn btn-sm">선택 해제</button>
+          <button id="btn-ds-test-selected" class="btn btn-primary">접속 테스트</button>
+          <button id="btn-ds-list-toggle" class="btn btn-sm">목록 접기</button>
+          <button id="btn-ds-export" class="btn btn-sm">엑셀 다운로드</button>
+          <button id="btn-ds-send-to-multi" class="btn btn-sm">여러 인스턴스 테스트로 보내기 →</button>
+        </div>
+        <div class="table-wrap" id="ds-table-wrap" style="flex:1 1 auto;min-height:220px;max-height:480px">
+          <table id="ds-table">
+            <thead><tr><th></th><th>이름</th><th>타입</th><th>접속 상태</th><th>관리</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="box" id="ds-multi-section">
+          <div class="row" style="justify-content:space-between;align-items:center">
+            <div class="box-title">여러 인스턴스에서 접속 테스트</div>
+            <button id="btn-ds-multi-toggle" class="btn btn-sm">펼치기</button>
+          </div>
+          <div id="ds-multi-body" class="grow" style="display:none">
+          <div class="row">
+            <label><input type="radio" name="ds-multi-mode" value="jndi" checked> JNDI 이름 (등록된 데이터소스)</label>
+            <label><input type="radio" name="ds-multi-mode" value="direct"> URL 직접 입력 (등록 전 테스트)</label>
+          </div>
+          <div class="row" id="ds-multi-jndi-row">
+            <input id="ds-multi-jndi" type="text" placeholder="JNDI 이름 (,로 구분해 여러 개 입력 가능 — 예: jdbc/SST0001, jdbc/SST0002)" style="flex:1;min-width:180px" />
+          </div>
+          <div class="row" id="ds-multi-direct-row" style="display:none">
+            <select id="ds-direct-driver-select" style="display:none;flex:0.8;min-width:140px">
+              <option value="oracle">Oracle</option>
+              <option value="mssql">MSSQL</option>
+              <option value="postgresql">PostgreSQL</option>
+              <option value="tibero">Tibero</option>
+            </select>
+            <input id="ds-direct-url" type="text" placeholder="JDBC URL (예: jdbc:oracle:thin:@//localhost:1521/XE)" style="flex:2;min-width:220px" />
+            <input id="ds-direct-user" type="text" placeholder="사용자" style="flex:1;min-width:100px" />
+            <input id="ds-direct-password" type="password" placeholder="비밀번호" style="flex:1;min-width:100px" />
+          </div>
+          <div class="hint" id="ds-multi-hint">데이터소스 등록명(예: SST0002_MSSQL)이 아니라 JNDI 이름(예: jdbc/SST0002, "_" 앞부분만)을 입력하세요.
+            여러 JNDI 이름을 ,로 구분해 입력하면 선택한 인스턴스마다 전부 테스트합니다.</div>
+          <div class="row">
+            <label for="ds-multi-sg-filter" style="width:60px">서버그룹</label>
+            <select id="ds-multi-sg-filter" style="flex:1"><option value="">전체 서버그룹</option></select>
+            <label for="ds-multi-type-filter" style="width:60px">서버타입</label>
+            <select id="ds-multi-type-filter" style="flex:0.7">
+              <option value="">전체</option>
+              <option value="DEV">개발</option>
+              <option value="PROD">운영</option>
+              <option value="BOTH">운영개발</option>
+            </select>
+            <label for="ds-multi-server-filter" style="width:40px">서버</label>
+            <select id="ds-multi-server-filter" style="flex:1"><option value="">전체 서버</option></select>
+            <label for="ds-multi-group-filter" style="width:40px">그룹</label>
+            <select id="ds-multi-group-filter" style="flex:1"><option value="">전체 그룹</option></select>
+          </div>
+          <div class="row">
+            <button id="btn-ds-multi-test" class="btn btn-primary">테스트</button>
+            <button id="btn-ds-multi-select-all" class="btn btn-sm">전체 선택</button>
+            <button id="btn-ds-multi-select-none" class="btn btn-sm">선택 해제</button>
+          </div>
+          <div id="ds-multi-instance-list" class="checklist" style="max-height:110px"></div>
+          <div id="ds-multi-checked-summary" class="hint"></div>
+          <div class="table-wrap grow" style="min-height:220px;max-height:360px">
+            <table id="ds-multi-result-table">
+              <thead><tr><th>인스턴스</th><th id="ds-multi-result-id-header">JNDI 이름</th><th>결과</th><th>DB 타입</th><th>URL</th><th>응답시간</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-registry">
+        <div class="row">
+          <label for="registry-sg-select" style="width:60px">서버그룹</label>
+          <select id="registry-sg-select" style="flex:1"></select>
+          <label for="registry-type-select" style="width:60px">서버타입</label>
+          <select id="registry-type-select" style="flex:0.7">
+            <option value="">전체</option>
+            <option value="DEV">개발</option>
+            <option value="PROD">운영</option>
+            <option value="BOTH">운영개발</option>
+          </select>
+          <label for="registry-server-select" style="width:40px">서버</label>
+          <select id="registry-server-select" style="flex:1"></select>
+          <label for="registry-group-select" style="width:40px">그룹</label>
+          <select id="registry-group-select" style="flex:1"></select>
+          <label for="registry-instance-select" style="width:60px">인스턴스</label>
+          <select id="registry-instance-select" style="flex:1.5"></select>
+        </div>
+        <div class="row">
+          <span id="registry-instance-label" class="hint">좌측에서 인스턴스를 선택하세요.</span>
+        </div>
+        <div class="box">
+          <div class="box-title">레지스트리 탐색</div>
+          <div class="hint">폴더를 클릭하면 펼쳐지고, 파일을 클릭하면 내용을 조회합니다. 입력하는
+            즉시 이미 펼쳐둔 폴더 안에서 걸러서 보여줍니다(위치를 아는데 한 폴더에 파일이 많을 때) —
+            어디 있는지 모르면 Enter나 "검색"으로 레지스트리 전체를 찾습니다(느릴 수 있음).</div>
+          <div class="row">
+            <input id="registry-search" type="text" placeholder="이름에 포함된 문자열 (예: Delete)" style="flex:1" />
+            <button id="btn-registry-search" class="btn btn-sm">검색</button>
+            <button id="btn-registry-search-clear" class="btn btn-sm">지우기</button>
+            <button id="btn-registry-tree-refresh" class="btn btn-sm">새로고침</button>
+          </div>
+          <div id="registry-search-results" class="checklist" style="max-height:160px; display:none"></div>
+          <div id="registry-tree" class="registry-tree"></div>
+        </div>
+        <div class="box">
+          <div class="box-title">레지스트리 리소스</div>
+          <div class="hint">예: registry/config/jdbc/DeleteInsert.yaml — 저장 시 존재 여부를 자동
+            판단해 생성(POST) 또는 수정(PUT)합니다. 조회는 슬래시 없이 파일명만 입력해도
+            인스턴스에 설정된 JDBC 레지스트리 경로를 붙여 자동으로 찾습니다 (예: DeleteInsert.yaml).</div>
+          <div class="row">
+            <label for="registry-path" style="width:60px">경로</label>
+            <input id="registry-path" type="text" placeholder="registry/config/jdbc/DeleteInsert.yaml 또는 DeleteInsert.yaml" style="flex:1" />
+            <button id="btn-registry-load" class="btn btn-sm">조회</button>
+          </div>
+          <div class="row">
+            <span id="registry-status" class="hint">-</span>
+          </div>
+        </div>
+        <div class="box grow">
+          <div class="box-title">내용</div>
+          <textarea id="registry-content" class="log-area" placeholder="조회한 리소스 내용이 여기 표시됩니다. 직접 입력해 새 리소스를 만들 수도 있습니다."></textarea>
+        </div>
+        <div class="row">
+          <button id="btn-registry-save" class="btn btn-primary">저장</button>
+          <button id="btn-registry-delete" class="btn btn-danger">삭제</button>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-logs">
+        <div class="row">
+          <label for="log-sg-select" style="width:60px">서버그룹</label>
+          <select id="log-sg-select" style="flex:1"></select>
+          <label for="log-type-select" style="width:60px">서버타입</label>
+          <select id="log-type-select" style="flex:0.7">
+            <option value="">전체</option>
+            <option value="DEV">개발</option>
+            <option value="PROD">운영</option>
+            <option value="BOTH">운영개발</option>
+          </select>
+          <label for="log-server-select" style="width:40px">서버</label>
+          <select id="log-server-select" style="flex:1"></select>
+          <label for="log-group-select" style="width:40px">그룹</label>
+          <select id="log-group-select" style="flex:1"></select>
+          <label for="log-instance-select" style="width:60px">인스턴스</label>
+          <select id="log-instance-select" style="flex:1.5"></select>
+          <button id="btn-log-open-selected" class="btn btn-sm">열기</button>
+        </div>
+        <div class="row">
+          <button id="btn-log-add-tab" class="btn btn-sm">+ 탭 추가</button>
+          <button id="btn-log-close-tab" class="btn btn-sm">탭 닫기</button>
+          <button id="btn-log-grid-toggle" class="btn btn-sm">바둑판 보기</button>
+        </div>
+        <nav class="subtabbar" id="log-subtabbar"></nav>
+        <div id="log-panels" class="grow"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-monitor">
+        <div class="row">
+          <label for="monitor-server-group-filter" style="width:60px">서버그룹</label>
+          <select id="monitor-server-group-filter" style="flex:1"><option value="">서버그룹 선택...</option></select>
+          <label for="monitor-server-type-filter" style="width:60px">서버타입</label>
+          <select id="monitor-server-type-filter" style="flex:0.7">
+            <option value="">전체</option>
+            <option value="DEV">개발</option>
+            <option value="PROD">운영</option>
+            <option value="BOTH">운영개발</option>
+          </select>
+          <label for="monitor-server-filter" style="width:40px">서버</label>
+          <select id="monitor-server-filter" style="flex:1"><option value="">전체 서버</option></select>
+          <label for="monitor-group-filter" style="width:40px">그룹</label>
+          <select id="monitor-group-filter" style="flex:1"><option value="">전체 그룹</option></select>
+          <button id="monitor-select-all" class="btn btn-sm">전체 선택</button>
+          <button id="monitor-select-none" class="btn btn-sm">선택 해제</button>
+        </div>
+        <div id="monitor-instance-list" class="checklist" style="max-height:160px"></div>
+        <div id="monitor-checked-summary" class="hint"></div>
+        <div class="row" style="align-items:center">
+          <button id="btn-monitor-toggle" class="btn btn-sm btn-primary">모니터링 시작</button>
+          <span id="monitor-status" class="hint">중지됨</span>
+          <button id="btn-monitor-refresh" class="btn btn-sm">새로고침</button>
+          <label for="monitor-poll-sec" style="width:auto">자동 수집 주기(초)</label>
+          <input type="number" id="monitor-poll-sec" min="5" step="1" style="width:70px">
+          <button id="btn-monitor-history-reset" class="btn btn-sm">추이 기록 초기화</button>
+        </div>
+        <div class="hint">서버그룹을 선택하면(왼쪽 트리 클릭도 가능) 아래에 인스턴스 목록이 표시됩니다 —
+          모니터링하고 싶은 인스턴스를 체크한 뒤 "모니터링 시작"을 누르세요("새로고침"으로 체크된
+          인스턴스의 상태를 한 번만 확인할 수도 있습니다). 체크된 MI 인스턴스만 백그라운드에서
+          주기적으로 수집하며(APIM은 추후 지원 예정), 시작 후에도 체크를 바꾸면 그 범위로 바로
+          반영됩니다. 인스턴스 개수에 따라 카드에 담기는 정보의 밀도가 자동으로 조절됩니다.
+          추이 기록은 앱 실행 중에만 메모리에 보관되며 재시작 시 초기화됩니다.</div>
+
+        <div class="row" id="monitor-summary"></div>
+
+        <div class="monitor-grid grow" id="monitor-grid">
+          <div class="hint">모니터링할 인스턴스를 선택하세요.</div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-audit">
+        <div class="row filter-row">
+          <label>액션:</label>
+          <select id="audit-filter-action">
+            <option value="">전체</option>
+            <option value="DEPLOY">DEPLOY</option>
+            <option value="DELETE">DELETE</option>
+            <option value="ROLLBACK">ROLLBACK</option>
+            <option value="RESTART_ALL">RESTART_ALL</option>
+            <option value="SHUTDOWN">SHUTDOWN</option>
+            <option value="CONNECTION_TEST">CONNECTION_TEST</option>
+            <option value="REGISTRY_SAVE">REGISTRY_SAVE</option>
+            <option value="REGISTRY_DELETE">REGISTRY_DELETE</option>
+            <option value="EXPORT_INSTANCES">EXPORT_INSTANCES</option>
+            <option value="IMPORT_INSTANCES">IMPORT_INSTANCES</option>
+            <option value="CLEAR_JNDI_CACHE">CLEAR_JNDI_CACHE</option>
+          </select>
+          <label>인스턴스:</label>
+          <input id="audit-filter-instance" type="text" placeholder="이름 검색" />
+          <label>키워드:</label>
+          <input id="audit-filter-keyword" type="text" placeholder="결과/비고 검색" />
+          <button id="btn-audit-refresh" class="btn btn-sm">새로고침</button>
+          <button id="btn-audit-csv" class="btn btn-sm">CSV 내보내기</button>
+        </div>
+        <div class="table-wrap grow">
+          <table id="audit-table">
+            <thead>
+              <tr>
+                <th>시간</th><th>인스턴스</th><th>액션</th><th>대상</th><th>결과</th><th>비고</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+
+<script src="js/ui.js"></script>
+<script src="js/constants.js"></script>
+<script src="js/api.js"></script>
+<script src="js/instances.js"></script>
+<script src="js/deploy.js"></script>
+<script src="js/restart.js"></script>
+<script src="js/datasources.js"></script>
+<script src="js/registry.js"></script>
+<script src="js/logs.js"></script>
+<script src="js/monitor.js"></script>
+<script src="js/audit.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
