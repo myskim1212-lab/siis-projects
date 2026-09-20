@@ -492,11 +492,11 @@ const Instances = (() => {
           <div class="field-group-title">OS SSH 접속</div>
           <div class="field-row"><label><input type="checkbox" id="f-ssh-enabled" ${d.ssh_enabled ? 'checked' : ''}> SSH 접속 사용</label></div>
           <div class="hint">이 서버 아래 모든 인스턴스가 재시작/정지, 로그 tail -f 등에 이 SSH 계정을 공유해서 씁니다.</div>
-          <div class="field-row" id="ssh-row-host"><label>SSH Host (비우면 서버 IP)</label><input type="text" id="f-ssh-host" value="${UI.esc(d.ssh_host)}"></div>
-          <div class="field-row" id="ssh-row-port"><label>SSH Port</label><input type="number" id="f-ssh-port" value="${d.ssh_port}"></div>
-          <div class="field-row" id="ssh-row-user"><label>SSH 계정</label><input type="text" id="f-ssh-user" value="${UI.esc(d.ssh_user)}"></div>
-          <div class="field-row" id="ssh-row-pass"><label>SSH 패스워드</label><input type="password" id="f-ssh-pass" value="${UI.esc(d.ssh_pass)}"></div>
-          <div class="field-row" id="ssh-row-key"><label>PEM 키 경로</label><input type="text" id="f-ssh-key" value="${UI.esc(d.ssh_key_path)}"></div>
+          <div class="field-row" id="ssh-row-host"><label>SSH Host</label><input type="text" id="f-ssh-host" value="${UI.esc(d.ssh_host || '')}"></div>
+          <div class="field-row" id="ssh-row-port"><label>SSH Port</label><input type="number" id="f-ssh-port" value="${d.ssh_port || 22}"></div>
+          <div class="field-row" id="ssh-row-user"><label>SSH 계정</label><input type="text" id="f-ssh-user" value="${UI.esc(d.ssh_user || '')}"></div>
+          <div class="field-row" id="ssh-row-pass"><label>SSH 패스워드</label><input type="password" id="f-ssh-pass" value="${UI.esc(d.ssh_pass || '')}"></div>
+          <div class="field-row" id="ssh-row-key"><label>PEM 키 경로</label><input type="text" id="f-ssh-key" value="${UI.esc(d.ssh_key_path || '')}"></div>
         </div>
       </div>
       <div class="modal-footer">
@@ -854,10 +854,10 @@ const Instances = (() => {
             경로는 SIIS 커넥터 전용 기능이라 EI엔 해당 없음 — 기본/로그/lib/시퀀스/bin 경로는 EI도 Carbon
             기반이라 MI와 동일하게 적용됩니다). 서비스 Port는 EI도 사용합니다 — JDBC 접속 테스트, 로그 뷰어
             API 등이 이 포트로 호출되며, EI의 기본값(8280)은 MI(8290)와 다르니 반드시 확인하세요.</div>
+          <div class="hint">OS SSH 접속 정보(재시작/정지, 로그 tail -f 등에 쓰는 계정)는 인스턴스가 아니라
+            이 인스턴스가 속한 "서버" 등록/수정 화면에서 관리합니다 — 같은 서버 위 인스턴스는 보통
+            같은 OS 계정을 쓰기 때문입니다.</div>
         </div>
-        <div class="hint">OS SSH 접속 정보(재시작/정지, 로그 tail -f 등에 쓰는 계정)는 인스턴스가 아니라
-          이 인스턴스가 속한 "서버" 등록/수정 화면에서 관리합니다 — 같은 서버 위 인스턴스는 보통
-          같은 OS 계정을 쓰기 때문입니다.</div>
       </div>
       <div class="modal-footer">
         <button class="btn" data-act="cancel">취소</button>

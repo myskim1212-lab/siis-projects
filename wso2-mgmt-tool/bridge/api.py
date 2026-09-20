@@ -310,9 +310,11 @@ class Api:
             return {'success': False, 'error': 'Instance not found'}
         try:
             if is_mi_type(inst.type):
-                ok = MIClient(inst).ping()
+                with MIClient(inst) as mi:
+                    ok = mi.ping()
             else:
-                ok = APIMClient(inst).ping()
+                with APIMClient(inst) as ap:
+                    ok = ap.ping()
             if log:
                 log_action('CONNECTION_TEST', [inst], 'SUCCESS' if ok else 'FAILED',
                            detail=f'{inst.host}:{inst.port}' + ('' if ok else ' — Ping 실패'))
@@ -331,9 +333,8 @@ class Api:
         if not is_mi_type(inst.type):
             return {'success': False, 'error': 'MI 인스턴스에서만 데이터소스 조회가 가능합니다.'}
         try:
-            mi = MIClient(inst)
-            items = mi.list_datasources()
-            mi.close()
+            with MIClient(inst) as mi:
+                items = mi.list_datasources()
             return {'success': True, 'items': items}
         except Exception as e:
             return {'success': False, 'error': str(e)}
@@ -347,15 +348,14 @@ class Api:
         if not is_mi_type(inst.type):
             return {'success': False, 'error': 'MI 인스턴스에서만 데이터소스 조회가 가능합니다.'}
         try:
-            mi = MIClient(inst)
             merged = {}
-            for term in terms:
-                term = term.strip()
-                if not term:
-                    continue
-                for ds in mi.search_datasources(term):
-                    merged[ds['name']] = ds
-            mi.close()
+            with MIClient(inst) as mi:
+                for term in terms:
+                    term = term.strip()
+                    if not term:
+                        continue
+                    for ds in mi.search_datasources(term):
+                        merged[ds['name']] = ds
             return {'success': True, 'items': list(merged.values())}
         except Exception as e:
             return {'success': False, 'error': str(e)}
@@ -367,9 +367,8 @@ class Api:
         if not is_mi_type(inst.type):
             return {'success': False, 'error': 'MI 인스턴스에서만 데이터소스 조회가 가능합니다.'}
         try:
-            mi = MIClient(inst)
-            data = mi.get_datasource(name)
-            mi.close()
+            with MIClient(inst) as mi:
+                data = mi.get_datasource(name)
             return {'success': True, 'data': data}
         except Exception as e:
             return {'success': False, 'error': str(e)}
@@ -403,9 +402,8 @@ class Api:
                 cached = db.get_cached_jndi(instance_id, name)
                 if cached:
                     return {'success': True, 'jndi_name': cached}
-            mi = MIClient(inst)
-            jndi = mi.get_datasource_jndi_name(name)
-            mi.close()
+            with MIClient(inst) as mi:
+                jndi = mi.get_datasource_jndi_name(name)
             if jndi is None:
                 return {'success': False, 'error': '해당 데이터소스가 포함된 CAR을 찾지 못했거나 JNDI 설정이 없습니다.'}
             db.set_cached_jndi(instance_id, name, jndi)
@@ -435,17 +433,16 @@ class Api:
             return {'success': False, 'error': 'Instance not found'}
         if not is_mi_type(inst.type):
             return {'success': False, 'error': 'MI 인스턴스에서만 지원됩니다.'}
-        mi = MIClient(inst)
         results = []
-        for name in names:
-            try:
-                jndi = self._resolve_jndi_name(mi, instance_id, name)
-                r = mi.test_datasource_connection(jndi)
-                r['name'] = name
-                results.append(r)
-            except Exception as e:
-                results.append({'success': False, 'name': name, 'error': str(e)})
-        mi.close()
+        with MIClient(inst) as mi:
+            for name in names:
+                try:
+                    jndi = self._resolve_jndi_name(mi, instance_id, name)
+                    r = mi.test_datasource_connection(jndi)
+                    r['name'] = name
+                    results.append(r)
+                except Exception as e:
+                    results.append({'success': False, 'name': name, 'error': str(e)})
         return {'success': True, 'results': results}
 
     def test_datasource_multi(self, jndi_names, instance_ids: list):
@@ -462,19 +459,18 @@ class Api:
             if not is_mi_type(inst.type):
                 return [{'success': False, 'instance_id': inst.id, 'instance_name': inst.name,
                          'jndi_name': jn, 'error': 'MI 인스턴스가 아닙니다.'} for jn in jndi_names]
-            mi = MIClient(inst)
             out = []
-            for jn in jndi_names:
-                try:
-                    r = mi.test_datasource_connection(jn)
-                    r['instance_id'] = inst.id
-                    r['instance_name'] = inst.name
-                    r['jndi_name'] = jn
-                except Exception as e:
-                    r = {'success': False, 'instance_id': inst.id, 'instance_name': inst.name,
-                         'jndi_name': jn, 'error': str(e)}
-                out.append(r)
-            mi.close()
+            with MIClient(inst) as mi:
+                for jn in jndi_names:
+                    try:
+                        r = mi.test_datasource_connection(jn)
+                        r['instance_id'] = inst.id
+                        r['instance_name'] = inst.name
+                        r['jndi_name'] = jn
+                    except Exception as e:
+                        r = {'success': False, 'instance_id': inst.id, 'instance_name': inst.name,
+                             'jndi_name': jn, 'error': str(e)}
+                    out.append(r)
             return out
 
         if not instances or not jndi_names:
@@ -493,9 +489,8 @@ class Api:
                 return {'success': False, 'instance_id': inst.id, 'instance_name': inst.name,
                         'error': 'MI 인스턴스가 아닙니다.'}
             try:
-                mi = MIClient(inst)
-                r = mi.test_datasource_direct(url, user, password)
-                mi.close()
+                with MIClient(inst) as mi:
+                    r = mi.test_datasource_direct(url, user, password)
                 r['instance_id'] = inst.id
                 r['instance_name'] = inst.name
                 return r
@@ -528,9 +523,8 @@ class Api:
         if err:
             return err
         try:
-            ei = EIClient(inst)
-            items = ei.list_datasources()
-            ei.close()
+            with EIClient(inst) as ei:
+                items = ei.list_datasources()
             return {'success': True, 'items': items}
         except Exception as e:
             return {'success': False, 'error': str(e)}
@@ -541,9 +535,8 @@ class Api:
         if err:
             return err
         try:
-            ei = EIClient(inst)
-            data = ei.get_datasource(name)
-            ei.close()
+            with EIClient(inst) as ei:
+                data = ei.get_datasource(name)
             if data is None:
                 return {'success': False, 'error': f'데이터소스를 찾을 수 없습니다: {name}'}
             return {'success': True, 'data': data}
@@ -564,20 +557,19 @@ class Api:
         if err:
             return err
         try:
-            ei = EIClient(inst)
-            extra = self._ei_extra_fields(data)
-            ei.save_datasource(
-                name=(data.get('name') or '').strip(),
-                description=(data.get('description') or '').strip(),
-                jndi_name=(data.get('jndi_name') or '').strip(),
-                driver_class_name=(data.get('driver_class_name') or '').strip(),
-                url=(data.get('url') or '').strip(),
-                username=(data.get('username') or '').strip(),
-                password=data.get('password') or '',
-                extra=extra,
-                is_edit=bool(data.get('is_edit')),
-            )
-            ei.close()
+            with EIClient(inst) as ei:
+                extra = self._ei_extra_fields(data)
+                ei.save_datasource(
+                    name=(data.get('name') or '').strip(),
+                    description=(data.get('description') or '').strip(),
+                    jndi_name=(data.get('jndi_name') or '').strip(),
+                    driver_class_name=(data.get('driver_class_name') or '').strip(),
+                    url=(data.get('url') or '').strip(),
+                    username=(data.get('username') or '').strip(),
+                    password=data.get('password') or '',
+                    extra=extra,
+                    is_edit=bool(data.get('is_edit')),
+                )
             action = 'EI_DATASOURCE_EDIT' if data.get('is_edit') else 'EI_DATASOURCE_ADD'
             log_action(action, [inst], 'SUCCESS', target_name=data.get('name', ''))
             return {'success': True}
@@ -592,9 +584,8 @@ class Api:
         if err:
             return err
         try:
-            ei = EIClient(inst)
-            ei.delete_datasource(name)
-            ei.close()
+            with EIClient(inst) as ei:
+                ei.delete_datasource(name)
             log_action('EI_DATASOURCE_DELETE', [inst], 'SUCCESS', target_name=name)
             return {'success': True}
         except Exception as e:
@@ -608,16 +599,15 @@ class Api:
         if err:
             return err
         try:
-            ei = EIClient(inst)
-            result = ei.test_connection(
-                name=(data.get('name') or '').strip(),
-                driver_class_name=(data.get('driver_class_name') or '').strip(),
-                url=(data.get('url') or '').strip(),
-                username=(data.get('username') or '').strip(),
-                password=data.get('password') or '',
-                extra=self._ei_extra_fields(data),
-            )
-            ei.close()
+            with EIClient(inst) as ei:
+                result = ei.test_connection(
+                    name=(data.get('name') or '').strip(),
+                    driver_class_name=(data.get('driver_class_name') or '').strip(),
+                    url=(data.get('url') or '').strip(),
+                    username=(data.get('username') or '').strip(),
+                    password=data.get('password') or '',
+                    extra=self._ei_extra_fields(data),
+                )
             return {'success': True, **result}
         except Exception as e:
             return {'success': False, 'error': str(e)}
@@ -630,9 +620,8 @@ class Api:
         if err:
             return err
         try:
-            ei = EIClient(inst)
-            result = ei.test_existing_datasource(name)
-            ei.close()
+            with EIClient(inst) as ei:
+                result = ei.test_existing_datasource(name)
             return {'success': True, **result}
         except Exception as e:
             return {'success': False, 'error': str(e)}
@@ -652,19 +641,18 @@ class Api:
             if err:
                 return [{'success': False, 'instance_id': inst.id, 'instance_name': inst.name,
                          'jndi_name': n, 'error': err['error']} for n in names]
-            ei = EIClient(inst)
             out = []
-            for n in names:
-                try:
-                    r = ei.test_existing_datasource(n)
-                    r['instance_id'] = inst.id
-                    r['instance_name'] = inst.name
-                    r['jndi_name'] = n
-                except Exception as e:
-                    r = {'success': False, 'instance_id': inst.id, 'instance_name': inst.name,
-                         'jndi_name': n, 'error': str(e)}
-                out.append(r)
-            ei.close()
+            with EIClient(inst) as ei:
+                for n in names:
+                    try:
+                        r = ei.test_existing_datasource(n)
+                        r['instance_id'] = inst.id
+                        r['instance_name'] = inst.name
+                        r['jndi_name'] = n
+                    except Exception as e:
+                        r = {'success': False, 'instance_id': inst.id, 'instance_name': inst.name,
+                             'jndi_name': n, 'error': str(e)}
+                    out.append(r)
             return out
 
         if not instances or not names:
@@ -685,11 +673,10 @@ class Api:
             if err:
                 return {'success': False, 'instance_id': inst.id, 'instance_name': inst.name, 'error': err['error']}
             try:
-                ei = EIClient(inst)
-                r = ei.test_connection(
-                    name='TEST_CONNECTION', driver_class_name=driver_class_name,
-                    url=url, username=user, password=password)
-                ei.close()
+                with EIClient(inst) as ei:
+                    r = ei.test_connection(
+                        name='TEST_CONNECTION', driver_class_name=driver_class_name,
+                        url=url, username=user, password=password)
                 r['instance_id'] = inst.id
                 r['instance_name'] = inst.name
                 return r
@@ -713,9 +700,8 @@ class Api:
         if not is_mi_type(inst.type):
             return {'success': False, 'error': 'MI 인스턴스에서만 지원됩니다 (APIM은 추후 지원 예정).'}
         try:
-            mi = MIClient(inst)
-            data = mi.get_jvm_info()
-            mi.close()
+            with MIClient(inst) as mi:
+                data = mi.get_jvm_info()
             return data
         except Exception as e:
             return {'success': False, 'error': str(e)}
@@ -733,9 +719,8 @@ class Api:
                 return {'success': False, 'instance_id': inst.id, 'instance_name': inst.name,
                         'error': 'MI 인스턴스에서만 지원됩니다 (APIM은 추후 지원 예정).'}
             try:
-                mi = MIClient(inst)
-                data = mi.get_jvm_info()
-                mi.close()
+                with MIClient(inst) as mi:
+                    data = mi.get_jvm_info()
                 data['instance_id'] = inst.id
                 data['instance_name'] = inst.name
                 return data
@@ -757,9 +742,8 @@ class Api:
         if not is_mi_type(inst.type):
             return {'success': False, 'error': 'MI 인스턴스에서만 레지스트리 조회가 가능합니다.'}
         try:
-            mi = MIClient(inst)
-            items = mi.list_registry_resources(path)
-            mi.close()
+            with MIClient(inst) as mi:
+                items = mi.list_registry_resources(path)
             return {'success': True, 'items': items}
         except Exception as e:
             return {'success': False, 'error': str(e)}
@@ -774,9 +758,8 @@ class Api:
         if not keyword:
             return {'success': False, 'error': '검색어를 입력하세요.'}
         try:
-            mi = MIClient(inst)
-            result = mi.search_registry_resources(root_path or 'registry', keyword)
-            mi.close()
+            with MIClient(inst) as mi:
+                result = mi.search_registry_resources(root_path or 'registry', keyword)
             return {'success': True, **result}
         except Exception as e:
             return {'success': False, 'error': str(e)}
@@ -788,9 +771,8 @@ class Api:
         if not is_mi_type(inst.type):
             return {'success': False, 'error': 'MI 인스턴스에서만 레지스트리 조회가 가능합니다.'}
         try:
-            mi = MIClient(inst)
-            content = mi.get_registry_resource(path)
-            mi.close()
+            with MIClient(inst) as mi:
+                content = mi.get_registry_resource(path)
             return {'success': True, 'exists': True, 'content': content}
         except requests.HTTPError as e:
             if e.response is not None and e.response.status_code == 400:
@@ -811,9 +793,8 @@ class Api:
         if not is_mi_type(inst.type):
             return {'success': False, 'error': 'MI 인스턴스에서만 레지스트리 저장이 가능합니다.'}
         try:
-            mi = MIClient(inst)
-            result = mi.save_registry_resource(path, content)
-            mi.close()
+            with MIClient(inst) as mi:
+                result = mi.save_registry_resource(path, content)
             log_action('REGISTRY_SAVE', [inst], 'SUCCESS', path,
                       f"[{result.get('mode')}] {path}", operator='admin')
             return {'success': True, 'mode': result.get('mode')}
@@ -828,9 +809,8 @@ class Api:
         if not is_mi_type(inst.type):
             return {'success': False, 'error': 'MI 인스턴스에서만 레지스트리 삭제가 가능합니다.'}
         try:
-            mi = MIClient(inst)
-            mi.delete_registry_resource(path)
-            mi.close()
+            with MIClient(inst) as mi:
+                mi.delete_registry_resource(path)
             log_action('REGISTRY_DELETE', [inst], 'SUCCESS', path, path, operator='admin')
             return {'success': True}
         except Exception as e:
@@ -1002,9 +982,8 @@ class Api:
         if not is_mi_type(inst.type):
             return {'success': False, 'error': 'MI 인스턴스에서만 로그 파일 목록을 지원합니다.'}
         try:
-            mi = MIClient(inst)
-            files = mi.list_log_files()
-            mi.close()
+            with MIClient(inst) as mi:
+                files = mi.list_log_files()
             return {'success': True, 'items': files}
         except Exception as e:
             return {'success': False, 'error': str(e)}

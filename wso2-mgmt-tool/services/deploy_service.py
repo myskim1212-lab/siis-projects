@@ -246,18 +246,17 @@ def deploy_to_instance(inst: Instance, file_path: Path, operator: str = 'admin',
 
     try:
         if artifact_type == 'CAR':
-            mi = MIClient(inst)
-            try:
-                existing = next((a for a in mi.list_apps() if a['file_name'] == file_path.name), None)
-                if existing:
-                    content = mi.download_app(file_path.name)
-                    ebp = _backup_path(inst, f'existing_{file_path.name}', ts)
-                    ebp.write_bytes(content)
-                    previous_backup_path_str = str(ebp)
-            except Exception:
-                pass  # 기존 파일 백업 실패해도 배포는 계속 진행
-            result = mi.deploy_app(file_path)
-            mi.close()
+            with MIClient(inst) as mi:
+                try:
+                    existing = next((a for a in mi.list_apps() if a['file_name'] == file_path.name), None)
+                    if existing:
+                        content = mi.download_app(file_path.name)
+                        ebp = _backup_path(inst, f'existing_{file_path.name}', ts)
+                        ebp.write_bytes(content)
+                        previous_backup_path_str = str(ebp)
+                except Exception:
+                    pass  # 기존 파일 백업 실패해도 배포는 계속 진행
+                result = mi.deploy_app(file_path)
         elif artifact_type == 'JAR':
             if inst.ssh_enabled:
                 if not inst.lib_path:
@@ -440,16 +439,15 @@ def undeploy_from_instances(instances: List[Instance], artifact_name: str, artif
                 raise RuntimeError('APIM 배포는 아직 지원되지 않습니다 (추후 지원 예정)')
 
             if artifact_type == 'CAR':
-                mi = MIClient(inst)
-                try:
-                    content = mi.download_app(artifact_name)
-                    bp = _backup_path(inst, artifact_name)
-                    bp.write_bytes(content)
-                    backup_path_str = str(bp)
-                except Exception:
-                    pass  # 백업 실패해도 삭제는 계속 진행
-                mi.undeploy_app(artifact_name)
-                mi.close()
+                with MIClient(inst) as mi:
+                    try:
+                        content = mi.download_app(artifact_name)
+                        bp = _backup_path(inst, artifact_name)
+                        bp.write_bytes(content)
+                        backup_path_str = str(bp)
+                    except Exception:
+                        pass  # 백업 실패해도 삭제는 계속 진행
+                    mi.undeploy_app(artifact_name)
             elif artifact_type == 'JAR':
                 if inst.ssh_enabled:
                     if not inst.lib_path:

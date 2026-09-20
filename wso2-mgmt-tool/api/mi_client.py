@@ -453,3 +453,10 @@ class MIClient:
 
     def close(self):
         self._c.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.close()
+        return False

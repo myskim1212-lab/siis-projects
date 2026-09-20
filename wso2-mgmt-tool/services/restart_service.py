@@ -74,9 +74,8 @@ def _restart_one(inst: Instance, cb: StatusCallback, graceful: bool = True,
         cb(f'[{inst.name}] 재시작 요청 중... ({mode}/API)')
     try:
         if chosen == 'API':
-            mi = MIClient(inst)
-            mi.restart(graceful=graceful)
-            mi.close()
+            with MIClient(inst) as mi:
+                mi.restart(graceful=graceful)
             cb(f'[{inst.name}] API 재시작 요청 완료')
         else:
             script = _ssh_script_path(inst)
@@ -111,9 +110,8 @@ def _shutdown_one(inst: Instance, cb: StatusCallback, graceful: bool = True,
         cb(f'[{inst.name}] 정지 요청 중... ({mode}/API)')
     try:
         if chosen == 'API':
-            mi = MIClient(inst)
-            mi.shutdown(graceful=graceful)
-            mi.close()
+            with MIClient(inst) as mi:
+                mi.shutdown(graceful=graceful)
             cb(f'[{inst.name}] API 정지 요청 완료')
         else:
             script = _ssh_script_path(inst)
