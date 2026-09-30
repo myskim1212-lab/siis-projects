@@ -26,6 +26,19 @@ public class JdbcConfig {
 	private Boolean stop_on_operation_error;
 	private Boolean stop_on_row_error;
 	private Boolean data_dump;
+
+	/** getConnection() 실패 시 추가로 시도할 횟수. 0=재시도 없음(기존 동작과 동일).
+	 *  datasource의 oracle.net.CONNECT_TIMEOUT/READ_TIMEOUT이 설정돼 있어야 의미가 있다
+	 *  (그게 없으면 매 시도가 여전히 무제한 대기할 수 있음). */
+	private Integer connection_retry_count;
+
+	/** 커넥션 획득 재시도마다 동일하게 적용되는 고정 대기 시간(ms) */
+	private Long connection_retry_interval_ms;
+
+	/** 커넥션을 얻은 직후 Connection.setNetworkTimeout()으로 적용할 값(ms).
+	 *  0=제한 없음(기존 동작과 동일). 커넥션 획득 자체가 멈추는 것은 못 막고,
+	 *  획득 이후 실행하는 SQL의 응답 대기만 제한한다. */
+	private Long connection_read_timeout_ms;
 	
 	@JsonIgnore
 	private DateTimeFormatter primaryDateFormatter;
@@ -229,7 +242,31 @@ public class JdbcConfig {
 	public void setData_dump(Boolean data_dump) {
 		this.data_dump = data_dump;
 	}
-	
+
+	public Integer getConnection_retry_count() {
+		return connection_retry_count;
+	}
+
+	public void setConnection_retry_count(Integer connection_retry_count) {
+		this.connection_retry_count = connection_retry_count;
+	}
+
+	public Long getConnection_retry_interval_ms() {
+		return connection_retry_interval_ms;
+	}
+
+	public void setConnection_retry_interval_ms(Long connection_retry_interval_ms) {
+		this.connection_retry_interval_ms = connection_retry_interval_ms;
+	}
+
+	public Long getConnection_read_timeout_ms() {
+		return connection_read_timeout_ms;
+	}
+
+	public void setConnection_read_timeout_ms(Long connection_read_timeout_ms) {
+		this.connection_read_timeout_ms = connection_read_timeout_ms;
+	}
+
     public List<OperationConfig> getOperations() {
         return operations;
     }

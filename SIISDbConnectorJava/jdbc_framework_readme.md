@@ -413,6 +413,10 @@ stop_on_row_error: true
 data_record_path: /operations
 data_dump: false
 
+connection_retry_count: 0            # getConnection() 실패 시 추가 시도 횟수 (0=재시도 없음)
+connection_retry_interval_ms: 500    # 재시도 사이 고정 대기 시간
+connection_read_timeout_ms: 0        # 커넥션 획득 후 SQL 실행에 적용할 응답 대기 상한 (0=제한 없음)
+
 date_formats:
   - yyyy-MM-dd
   - yyyyMMdd
@@ -445,6 +449,9 @@ operations:
 | `data_dump` | 요청/응답 JSON, SQL 바인딩 값을 DEBUG 로그로 덤프할지 여부 | 선택 | `false` |
 | `stop_on_operation_error` | Operation 실패 시 전체 중단 여부 | 선택 | `true` |
 | `stop_on_row_error` | Row 실패 시 Operation 중단 여부 (ROW scope) | 선택 | `true` |
+| `connection_retry_count` | `getConnection()` 실패 시 추가로 시도할 횟수 (아래 10.2절 참고) | 선택 | `0` |
+| `connection_retry_interval_ms` | 커넥션 획득 재시도마다 적용되는 고정 대기 시간(ms) | 선택 | `500` |
+| `connection_read_timeout_ms` | 커넥션 획득 후 `Connection.setNetworkTimeout()`으로 적용할 값(ms) — 획득 이후 실행하는 SQL의 응답 대기만 제한 | 선택 | `0`(제한 없음) |
 | `date_formats` | 날짜 파싱 포맷 목록 | 선택 | 기본 포맷 제공 |
 | `timestamp_formats` | timezone 포함(TZ-aware) TIMESTAMP 파싱 포맷 목록 | 선택 | `yyyy-MM-dd'T'HH:mm:ss.SSSXXX` |
 | `timestamp_ntz_formats` | timezone 없는(NTZ) TIMESTAMP 파싱 포맷 목록 — 미설정 시 `timestamp_formats`로 폴백 | 선택 | 기본 포맷 제공 |
@@ -1653,6 +1660,8 @@ batch_size: 1000
 
 ### 10.2 Connection Pool 설정
 
+WSO2 MI의 RDBMS datasource는 **Apache Tomcat JDBC Connection Pool**(`org.apache.tomcat.jdbc.pool`)을 그대로 사용한다. 아래 파라미터는 WSO2 고유 개념이 아니라 이 풀 구현체의 속성을 그대로 전달하는 것이다.
+
 WSO2 MI `deployment.toml` 예시:
 
 ```toml
@@ -1671,6 +1680,7 @@ max_idle = 10
 min_idle = 5
 initial_size = 5
 max_wait = 30000
+max_age = 7200000
 
 # Connection 검증
 test_on_borrow = true
@@ -1681,6 +1691,111 @@ validation_interval = 30000
 # Idle Connection 제거
 time_between_eviction_runs_millis = 30000
 min_evictable_idle_time_millis = 600000
+
+# 드라이버 레벨 타임아웃 (Oracle)
+connection_properties = "oracle.net.CONNECT_TIMEOUT=15000;oracle.net.READ_TIMEOUT=60000"
+```
+
+#### 10.2.1 주요 파라미터
+
+| 파라미터 | 의미 | 기본값 |
+|---|---|---|
+| `maxActive` | 동시에 사용(active) 가능한 최대 커넥션 수 | 100 |
+| `maxIdle` | 풀에 유휴로 유지할 커넥션 수 상한 (⚠️ 10.2.2 참고 — 기대만큼 강하게 작동하지 않는다) | `maxActive` |
+| `minIdle` | 풀에 유지할 최소 유휴 커넥션 수 — 아무리 오래 유휴여도 이 개수 밑으로는 정리되지 않음 | `initialSize` |
+| `initialSize` | 풀 시작 시 미리 만들어두는 커넥션 수 | 10 |
+| `maxWait` | 풀이 꽉 찼을 때(=`maxActive` 도달) 커넥션을 기다릴 최대 시간(ms), 초과 시 예외 | 30000 |
+| `maxAge` | 커넥션 생성 후 이 시간(ms)이 지나면 재연결(내용물 교체, 개수는 불변). `0`=비활성 | 0 |
+| `testOnBorrow` | 빌릴 때 `validationQuery`로 검증 | false |
+| `testWhileIdle` | 유휴 상태에서도 정리 스레드가 주기적으로 검증(+`maxAge` 체크) — **이게 켜져 있어야 정리 스레드 자체가 돈다** | false |
+| `testOnReturn` | 반납할 때 검증 | false |
+| `validationQuery` | 검증에 쓰는 SQL | - |
+| `validationInterval` | 같은 커넥션을 이 시간(ms) 이내에 또 검증하지 않음(중복 검증 방지) | 3000 |
+| `timeBetweenEvictionRunsMillis` | 정리 스레드 실행 주기(ms) | 5000 |
+| `minEvictableIdleTimeMillis` | 이 시간(ms) 이상 유휴면 제거 대상 (단 `minIdle` 아래로는 안 줄어듦) | 60000 |
+| `removeAbandoned` | 오래 반납 안 된(사용 중) 커넥션을 강제 회수할지 | false |
+| `removeAbandonedTimeout` | 위 강제 회수 판단 기준 시간(초) | 60 |
+| `connectionProperties` | 드라이버 레벨 프로퍼티(세미콜론 구분). Oracle의 경우 `oracle.net.CONNECT_TIMEOUT`/`READ_TIMEOUT` 등 | - |
+
+#### 10.2.2 핵심 동작 원리 — 알아두면 좋은 함정들
+
+1. **`maxIdle`은 기대만큼 즉시 작동하지 않는다.**
+   Tomcat JDBC Pool 소스(`ConnectionPool.returnConnection()`)를 보면, 반납 시 유휴 개수가 `maxIdle`을 넘어도 **정리 스레드(`timeBetweenEvictionRunsMillis > 0`)가 켜져 있으면 그 자리에서 안 닫고 그냥 유휴 큐에 넣는다.** 백그라운드 정리 스레드(`checkIdle`)도 `maxIdle` 초과 자체는 검사하지 않고 `minIdle`과 유휴 시간만 본다. 즉 `testWhileIdle`을 쓰는(=사실상 거의 항상 그런) 일반적인 설정에서는 `maxIdle`이 유휴 개수를 실질적으로 강제하지 않는다.
+
+2. **진짜 "바닥"은 `minIdle`이다.**
+   백그라운드 정리는 유휴 개수가 `minIdle`보다 많을 때만 동작하고, `minIdle`에 도달하면 멈춘다. 즉 `minIdle`개의 커넥션은 **아무리 오래 유휴 상태여도 `minEvictableIdleTimeMillis`로 정리되지 않고 무기한 보호받는다.** 트래픽이 드문 datasource에서 `minIdle > 0`으로 두면, 그 커넥션들이 방치되다 조용히(네트워크 이슈 등으로 TCP RST 없이) 죽어도 아무도 정리해주지 않는다는 뜻이다.
+
+3. **`maxAge`는 세 곳에서 체크된다 — 빌릴 때 / 반납할 때 / 유휴 중 주기적으로.**
+   `timeBetweenEvictionRunsMillis`가 0보다 크면, 정리 스레드가 유휴 커넥션에 대해서도 주기적으로 "지금 − 생성 시각 > `maxAge`"를 확인해 재연결한다 — **borrow가 전혀 없어도 백그라운드에서 알아서 갱신된다.** 다만 이건 "개수를 줄이는 것"이 아니라 "그 자리에서 내용물만 교체"하는 것이라 풀 크기는 그대로다.
+
+4. **`maxAge`와 `minEvictableIdleTimeMillis`는 서로 다른 축이다.**
+   - `maxAge`: 살아있는 동안 신선도 유지 (개수 불변, 내용물만 교체)
+   - `minEvictableIdleTimeMillis` + `minIdle`: 정말 안 쓰면 개수 자체를 줄임 (진짜 제거, DB 세션 반납)
+
+   둘 다 있어야 완전하다. `maxAge`만 있으면 안 쓰는 커넥션도 영원히 살아남아 DB 세션을 계속 점유한다. `minEvictableIdleTimeMillis`만 있고 `minIdle > 0`이면, 그 바닥만큼은 여전히 무기한 방치된다.
+
+5. **검증(`testOnBorrow`/`testWhileIdle`)은 `connectionProperties`의 타임아웃이 없으면 무방비다.**
+   죽은(응답 없는) 커넥션에 검증 쿼리를 날리면, `oracle.net.READ_TIMEOUT` 같은 드라이버 레벨 타임아웃이 없는 한 OS의 TCP 재전송이 끝날 때까지(십수 분) 무한정 대기할 수 있다. 이 대기는 `maxWait`으로 막지 못한다 — `maxWait`은 "풀이 꽉 차서 대기"하는 경우에만 적용되고, "검증 쿼리 응답을 기다리는" 경우엔 적용되지 않는다.
+
+**실제로 관측된 장애 패턴**: 호출 빈도가 낮은(예: 1시간에 1회) 해외 DB datasource에서, `minIdle > 0`으로 유휴 커넥션이 오래 방치되다 네트워크 순단으로 조용히 끊기고, 다음 호출 시 `testOnBorrow` 검증 쿼리가 죽은 소켓에서 응답을 기다리며 수십 분간 멈춘 뒤에야 성공하는 사례가 있었다. 아래 10.2.3의 "저빈도/불안정 네트워크" 프로파일과 10.3절의 커넥터 재시도 설정이 이 증상에 대한 대응이다.
+
+#### 10.2.3 상황별 권장 설정
+
+**자주 호출되는 안정적인 datasource**
+```toml
+max_active = 50
+max_idle = 3
+min_idle = 3
+max_age = 7200000                 # 2시간 — 보험 성격, 재사용을 방해하지 않을 정도로 넉넉하게
+connection_properties = "oracle.net.CONNECT_TIMEOUT=15000;oracle.net.READ_TIMEOUT=60000"
+```
+자주 쓰여서 `minIdle`로 보호되는 커넥션도 실사용으로 계속 검증되니 위험이 낮다. `maxAge`/타임아웃은 야간·주말처럼 트래픽이 뜸한 구간에 대비한 안전망이다.
+
+**호출 빈도가 낮거나 네트워크가 불안정한 datasource**
+```toml
+max_active = 50
+max_idle = 0
+min_idle = 0                      # 핵심 — 이게 있어야 min_evictable_idle_time_millis가 완전히 비울 수 있음
+max_age = 300000                  # 5분
+min_evictable_idle_time_millis = 600000   # 10분 — 호출 간격이 이보다 길면 매번 새 커넥션
+connection_properties = "oracle.net.CONNECT_TIMEOUT=15000;oracle.net.READ_TIMEOUT=60000"
+```
+호출 간격이 `min_evictable_idle_time_millis`보다 길면, 다음 호출 전에 풀이 항상 완전히 비워져서 매번 새 커넥션을 맺게 된다 — 죽은 유휴 커넥션을 재사용할 조건 자체가 사라진다. `min_idle=0`이 없으면(즉 기존처럼 `minIdle > 0`이면) 이 효과를 볼 수 없다.
+
+### 10.3 커넥션 획득 재시도 / SQL 응답 타임아웃 (`connection_retry_count` 등)
+
+해외 등 네트워크 품질이 불안정한 DB, 또는 호출 빈도가 낮아 풀의 유휴 커넥션이 오래(예: 1시간 이상) 방치될 수 있는 datasource에서는, 풀에 남아있던 커넥션이 조용히(TCP RST 없이) 끊긴 뒤 재사용 시 검증 쿼리가 응답 없는 소켓에서 수 분~수십 분씩 멈추는 현상이 발생할 수 있다. 이 세 설정은 그 증상을 완화하기 위한 것이다.
+
+```yaml
+connection_retry_count: 8
+connection_retry_interval_ms: 500
+connection_read_timeout_ms: 60000
+```
+
+| 항목 | 동작 |
+|------|------|
+| `connection_retry_count` | `getConnection()`이 `SQLException`을 던지면, 이 횟수만큼 추가로 재시도한다(총 시도 횟수 = 1 + 이 값). 재시도할 때마다 새 커넥션을 얻으려 시도하므로, 죽은 커넥션 하나 때문에 전체 요청이 실패하는 걸 막아준다. |
+| `connection_retry_interval_ms` | 재시도 사이 고정 대기 시간. |
+| `connection_read_timeout_ms` | 커넥션을 **성공적으로 얻은 뒤** `Connection.setNetworkTimeout()`으로 적용된다. 그 커넥션으로 실행하는 SQL이 이 시간 안에 응답이 없으면 `SQLException`으로 실패 처리된다. |
+
+⚠️ **`connection_retry_count`만으로는 부족하다 — datasource 자체의 타임아웃 설정이 반드시 함께 있어야 한다.**
+
+`getConnection()`이 호출한 순간부터 응답 없는 소켓에서 멈춰버리면(예: `testOnBorrow` 검증 쿼리가 죽은 유휴 커넥션에서 대기), 이 재시도 루프는 그 호출이 **끝나야만** 다음 시도로 넘어갈 수 있다. 즉 `getConnection()` 자체가 몇 분이고 안 끝나면, 재시도 횟수를 아무리 늘려도 소용이 없다. 그래서 datasource 정의(`deployment.toml` 또는 `datasources.xml`)의 `connectionProperties`에 Oracle 드라이버 레벨 타임아웃을 **반드시 같이 설정**해야 한다.
+
+```xml
+<connectionProperties>oracle.net.CONNECT_TIMEOUT=15000;oracle.net.READ_TIMEOUT=60000</connectionProperties>
+```
+
+- `oracle.net.CONNECT_TIMEOUT`: 새 물리 커넥션을 맺는 단계(TCP 핸드셰이크) 자체가 멈추는 것을 제한한다.
+- `oracle.net.READ_TIMEOUT`: `getConnection()` 내부에서 일어나는 검증 쿼리(`testOnBorrow`/`testWhileIdle`)를 포함해, 그 커넥션의 **모든** 소켓 읽기에 적용된다 — 이게 없으면 위에서 설명한 "재시도 루프에 진입도 못 하는" 상황을 막을 수 없다.
+- `connection_read_timeout_ms`(커넥터 설정)는 이 datasource 레벨 `READ_TIMEOUT`을 대체하지 않는다. 전자는 "커넥션을 얻은 뒤 이 커넥터가 실행하는 SQL"에만 적용되고, 후자는 "커넥션을 얻는 과정 자체"까지 포함해 더 넓게 적용된다. 둘 다 설정하는 것을 권장한다.
+
+**권장 조합** (호출 빈도가 낮고 네트워크가 불안정한 datasource):
+```
+minIdle=0, maxIdle=0   (datasource) — 유휴 커넥션을 오래 남겨두지 않음
+maxAge=300000          (datasource) — 살아있는 동안도 5분마다 갱신
+oracle.net.CONNECT_TIMEOUT=15000, READ_TIMEOUT=60000  (datasource)
+connection_retry_count=8, connection_retry_interval_ms=500  (이 커넥터)
 ```
 
 ---
