@@ -100,6 +100,13 @@ public class JdbcConfigLoader {
 	    if (config.getData_dump() == null)
 	        config.setData_dump(false);
 
+	    if (config.getConnection_retry_count() == null || config.getConnection_retry_count() < 0)
+	        config.setConnection_retry_count(JdbcConfigDefaults.DEFAULT_CONNECTION_RETRY_COUNT);
+	    if (config.getConnection_retry_interval_ms() == null || config.getConnection_retry_interval_ms() < 0)
+	        config.setConnection_retry_interval_ms(JdbcConfigDefaults.DEFAULT_CONNECTION_RETRY_INTERVAL_MS);
+	    if (config.getConnection_read_timeout_ms() == null || config.getConnection_read_timeout_ms() < 0)
+	        config.setConnection_read_timeout_ms(JdbcConfigDefaults.DEFAULT_CONNECTION_READ_TIMEOUT_MS);
+
 		if (config.getOperations() != null) {
 			for (OperationConfig op : config.getOperations())
 				applyOperationDefaults(op);

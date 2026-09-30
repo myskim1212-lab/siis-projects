@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.sql.DataSource;
 
@@ -41,10 +43,14 @@ public class JdbcExecutor {
 	/** Pool connection acquisitions slower than this threshold (ms) trigger a WARN log. */
 	private static final long CONN_SLOW_THRESHOLD_MS = 1_000;
 
+	/** Connection.setNetworkTimeout()가 요구하는 Executor — 커넥션마다 새로 만들지 않고 공유한다. */
+	private static final Executor NETWORK_TIMEOUT_EXECUTOR = Executors.newCachedThreadPool();
+
 	private final DataSource dataSource;
 	private final DbStrategy strategy;
 	private final String jndiName;
 	private String msgID;
+	private JdbcConfig jcfg;
 
 	public JdbcExecutor(DataSource dataSource, String jndiName, String msgID) throws Exception {
 		this.dataSource = dataSource;
@@ -54,18 +60,61 @@ public class JdbcExecutor {
 	}
 
 	/**
-	 * Acquires a JDBC connection from the pool, measures elapsed time, and logs the result.
-	 * Emits WARN if acquisition takes longer than {@value #CONN_SLOW_THRESHOLD_MS} ms.
+	 * Acquires a JDBC connection from the pool, retrying on failure per jcfg.connection_retry_count.
+	 * 재시도는 getConnection()이 예외를 던질 때만 의미가 있다 — datasource의
+	 * oracle.net.CONNECT_TIMEOUT/READ_TIMEOUT이 설정돼 있지 않으면 getConnection() 자체가
+	 * 무제한 대기할 수 있고, 그 상태에서는 재시도 루프에 진입할 기회조차 없다.
+	 * 성공하면 jcfg.connection_read_timeout_ms를 커넥션에 적용해, 이후 실행할 SQL의
+	 * 응답 대기 시간을 제한한다(획득 자체의 지연은 이 설정으로 막지 못함).
 	 */
 	private Connection acquireConnection() throws SQLException {
-		long start = System.currentTimeMillis();
-		Connection conn = dataSource.getConnection();
-		long elapsed = System.currentTimeMillis() - start;
-		LogMessageManager.debugConnectionAcquired(log, msgID, jndiName, elapsed);
-		if (elapsed > CONN_SLOW_THRESHOLD_MS) {
-			LogMessageManager.warnSlowPoolConnection(log, msgID, jndiName, elapsed, CONN_SLOW_THRESHOLD_MS);
+		int maxRetries = (jcfg != null && jcfg.getConnection_retry_count() != null)
+				? jcfg.getConnection_retry_count() : JdbcConfigDefaults.DEFAULT_CONNECTION_RETRY_COUNT;
+		long retryIntervalMs = (jcfg != null && jcfg.getConnection_retry_interval_ms() != null)
+				? jcfg.getConnection_retry_interval_ms() : JdbcConfigDefaults.DEFAULT_CONNECTION_RETRY_INTERVAL_MS;
+		long readTimeoutMs = (jcfg != null && jcfg.getConnection_read_timeout_ms() != null)
+				? jcfg.getConnection_read_timeout_ms() : JdbcConfigDefaults.DEFAULT_CONNECTION_READ_TIMEOUT_MS;
+
+		int totalAttempts = maxRetries + 1;
+		SQLException lastFailure = null;
+
+		for (int attempt = 1; attempt <= totalAttempts; attempt++) {
+			long start = System.currentTimeMillis();
+			try {
+				Connection conn = dataSource.getConnection();
+				long elapsed = System.currentTimeMillis() - start;
+				LogMessageManager.debugConnectionAcquired(log, msgID, jndiName, elapsed);
+				if (elapsed > CONN_SLOW_THRESHOLD_MS) {
+					LogMessageManager.warnSlowPoolConnection(log, msgID, jndiName, elapsed, CONN_SLOW_THRESHOLD_MS);
+				}
+				if (readTimeoutMs > 0) {
+					// setNetworkTimeout() 실패(드라이버 미지원 등)는 커넥션 자체는 정상이므로
+					// 재시도 대상으로 삼지 않고, 타임아웃 없이 그대로 반환한다.
+					try {
+						conn.setNetworkTimeout(NETWORK_TIMEOUT_EXECUTOR, (int) readTimeoutMs);
+					} catch (SQLException nte) {
+						LogMessageManager.warnNetworkTimeoutUnsupported(log, msgID, jndiName, readTimeoutMs, nte.getMessage());
+					}
+				}
+				return conn;
+			} catch (SQLException e) {
+				lastFailure = e;
+				if (attempt < totalAttempts) {
+					LogMessageManager.warnConnectionRetry(log, msgID, jndiName, attempt, totalAttempts,
+							retryIntervalMs, e.getMessage());
+					if (retryIntervalMs > 0) {
+						try {
+							Thread.sleep(retryIntervalMs);
+						} catch (InterruptedException ie) {
+							Thread.currentThread().interrupt();
+							throw e;
+						}
+					}
+				}
+			}
 		}
-		return conn;
+		LogMessageManager.errorConnectionRetryExhausted(log, msgID, jndiName, totalAttempts, lastFailure.getMessage());
+		throw lastFailure;
 	}
 
 	/*
@@ -75,6 +124,8 @@ public class JdbcExecutor {
 	 */
 	public JdbcExecutionResult executeJdbc(JdbcConfig jcfg, JsonNode parsedInput, JdbcExecutionResult result)
 			throws Exception {
+
+		this.jcfg = jcfg;
 
 		try {
 			ObjectMapper mapper = ObjectMapperHolder.INSTANCE.mapper;

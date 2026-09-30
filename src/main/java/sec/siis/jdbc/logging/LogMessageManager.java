@@ -554,6 +554,34 @@ public class LogMessageManager {
     }
 
     /**
+     * WARN: Logged when a getConnection() attempt fails and a retry will follow.
+     */
+    public static void warnConnectionRetry(Logger log, String msgID, String jndiName,
+            int attempt, int maxAttempts, long retryIntervalMs, String errorMessage) {
+        log.warn("{} Connection attempt {}/{} failed, retrying in {}ms: {}",
+                formatPrefix(msgID, jndiName), attempt, maxAttempts, retryIntervalMs, errorMessage);
+    }
+
+    /**
+     * ERROR: Logged when all connection retry attempts have been exhausted.
+     */
+    public static void errorConnectionRetryExhausted(Logger log, String msgID, String jndiName,
+            int totalAttempts, String errorMessage) {
+        log.error("{} Connection failed after {} attempt(s), giving up: {}",
+                formatPrefix(msgID, jndiName), totalAttempts, errorMessage);
+    }
+
+    /**
+     * WARN: Logged when Connection.setNetworkTimeout() is not supported by the driver/connection,
+     * so the connection is returned without the configured read-timeout protection.
+     */
+    public static void warnNetworkTimeoutUnsupported(Logger log, String msgID, String jndiName,
+            long readTimeoutMs, String errorMessage) {
+        log.warn("{} setNetworkTimeout({}ms) not supported, proceeding without it: {}",
+                formatPrefix(msgID, jndiName), readTimeoutMs, errorMessage);
+    }
+
+    /**
      * DEBUG: Logged before JNDI DataSource lookup.
      */
     public static void debugJndiLookup(Logger log, String jndiName) {

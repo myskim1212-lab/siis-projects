@@ -19,10 +19,27 @@ public class JdbcConfigDefaults {
     public static final int DEFAULT_BATCH_SIZE = 100;
     
     /**
-     * 기본 재시도 횟수
+     * 커넥션 획득(getConnection) 실패 시 기본 재시도 횟수.
+     * 0이면 재시도 없음(기존 동작과 동일) — datasource의 oracle.net.CONNECT_TIMEOUT/
+     * READ_TIMEOUT이 설정돼 있어야 getConnection()이 적당한 시간 안에 실패로 끝나서
+     * 이 재시도가 실제로 의미가 있다. 그 설정 없이 재시도 횟수만 늘려봐야, 매 시도가
+     * 여전히 무제한 대기할 수 있어 효과가 없다.
      */
-    public static final int DEFAULT_RETRY_COUNT = 0;
-    
+    public static final int DEFAULT_CONNECTION_RETRY_COUNT = 0;
+
+    /**
+     * 커넥션 획득 재시도 사이 고정 대기 시간(ms)
+     */
+    public static final long DEFAULT_CONNECTION_RETRY_INTERVAL_MS = 500L;
+
+    /**
+     * 커넥션 획득 후 Connection.setNetworkTimeout()으로 적용할 기본값(ms).
+     * 0이면 제한 없음(기존 동작과 동일). 이건 "커넥션을 얻은 뒤 실행하는 SQL"에만
+     * 적용되고, getConnection() 자체가 멈추는 것은 막지 못한다(그건 datasource의
+     * oracle.net.READ_TIMEOUT의 역할).
+     */
+    public static final long DEFAULT_CONNECTION_READ_TIMEOUT_MS = 0L;
+
     /**
      * 기본 최대 조회 건수 (SELECT)
      */
